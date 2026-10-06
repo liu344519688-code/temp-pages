@@ -3,85 +3,123 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>企业信息二维码页生成器</title>
-  <meta name="description" content="生成可分享的企业信息网页链接和二维码。" />
+  <title>发票信息链接生成器</title>
+  <meta name="description" content="生成发票信息展示链接和二维码。" />
   <style>
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",Arial,sans-serif;background:linear-gradient(135deg,#f4f8ff,#edf9f1);color:#172033;padding:22px}.wrap{max-width:900px;margin:0 auto}.card{background:#fff;border-radius:22px;padding:28px;box-shadow:0 18px 50px rgba(15,23,42,.10);border:1px solid #e5eaf0}.brand{text-align:center;margin-bottom:22px}.brand h1{margin:0 0 8px;font-size:30px}.brand p{margin:0;color:#64748b;line-height:1.7}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{margin-top:16px}.field.full{grid-column:1/-1}.field label{display:block;font-weight:700;margin-bottom:7px}.field input,.field textarea{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:12px 14px;font-size:15px;font-family:inherit;outline:none}.field input{height:46px}.field textarea{min-height:120px;resize:vertical;line-height:1.75}.field input:focus,.field textarea:focus{border-color:#16a34a;box-shadow:0 0 0 4px rgba(22,163,74,.09)}.hint{font-size:12px;color:#94a3b8;margin-top:6px}.btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:20px}.btn{border:0;border-radius:12px;height:47px;font-size:15px;font-weight:700;cursor:pointer}.primary{background:#16a34a;color:#fff}.dark{background:#0f172a;color:#fff}.light{background:#e2e8f0;color:#334155}.result{display:none;margin-top:26px;padding-top:24px;border-top:1px solid #e2e8f0}.result h2{margin:0 0 10px;font-size:20px}.share-url{word-break:break-all;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;line-height:1.6;font-size:13px}.qr{text-align:center;margin-top:18px}.qr #qrcode{display:inline-flex;padding:14px;background:#fff;border:1px solid #e2e8f0;border-radius:16px}.qr img,.qr canvas{display:block}.profile{display:none}.hero{overflow:hidden;border-radius:18px;background:#0f172a;color:#fff;position:relative}.hero img{width:100%;height:230px;object-fit:cover;display:block;opacity:.75}.hero .overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.08),rgba(15,23,42,.92));display:flex;align-items:flex-end;padding:24px}.hero h1{margin:0 0 6px;font-size:30px;line-height:1.35}.hero .subtitle{opacity:.86}.section{margin-top:24px}.section h2{font-size:18px;margin:0 0 11px}.intro{line-height:1.9;white-space:pre-wrap;word-break:break-word;color:#334155}.products{display:flex;flex-wrap:wrap;gap:9px}.tag{background:#ecfdf3;color:#15803d;border:1px solid #bbf7d0;padding:7px 11px;border-radius:999px;font-size:14px}.contact{display:grid;grid-template-columns:1fr 1fr;gap:10px}.item{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px}.item b{display:block;font-size:12px;color:#64748b;margin-bottom:5px}.item span{word-break:break-all}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}.action{display:flex;align-items:center;justify-content:center;text-decoration:none;height:48px;border-radius:12px;font-weight:700}.call{background:#16a34a;color:#fff}.link{background:#0f172a;color:#fff}.back{display:inline-block;margin-top:26px;color:#15803d;text-decoration:none;font-weight:700}.footer{text-align:center;margin-top:20px;color:#94a3b8;font-size:12px}@media(max-width:650px){body{padding:12px}.card{padding:19px 15px;border-radius:18px}.grid,.contact{grid-template-columns:1fr}.field.full{grid-column:auto}.btns,.actions{grid-template-columns:1fr}.brand h1,.hero h1{font-size:24px}.hero img{height:210px}}
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:#fff;color:#111;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif}
+    body{min-height:100vh}
+    .generator{max-width:720px;margin:32px auto;padding:24px}
+    .panel{border:1px solid #e5e7eb;border-radius:18px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+    .panel h1{margin:0 0 8px;font-size:28px}.desc{color:#6b7280;line-height:1.7;margin-bottom:24px}
+    .field{margin:16px 0}.field label{display:block;font-weight:700;margin-bottom:8px}.field input{width:100%;height:46px;border:1px solid #d1d5db;border-radius:10px;padding:0 12px;font-size:16px;outline:none}.field input:focus{border-color:#111}
+    .buttons{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}.btn{height:46px;border:0;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer}.primary{background:#111;color:#fff}.secondary{background:#f3f4f6;color:#111}
+    .result{display:none;margin-top:24px;border-top:1px solid #eee;padding-top:20px}.url{font-size:13px;line-height:1.6;word-break:break-all;background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:12px}.qr{text-align:center;margin-top:18px}.qr>div{display:inline-block;padding:12px;border:1px solid #eee;background:#fff}.qr img,.qr canvas{display:block}
+
+    .invoice-view{display:none;min-height:100vh;background:#fff;position:relative;padding:0 24px 42px}
+    .home{position:absolute;left:24px;top:34px;width:38px;height:38px;text-decoration:none;color:#000;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900}
+    .more{position:absolute;right:24px;top:34px;border:1px solid #eee;border-radius:24px;padding:8px 14px;font-size:22px;letter-spacing:3px;color:#222;background:#fff}
+    .content{max-width:620px;margin:0 auto;padding-top:145px;text-align:center}
+    .title{font-size:42px;line-height:1.2;margin:0 0 48px;font-weight:800;letter-spacing:1px}
+    .notice{font-size:26px;line-height:1.65;margin:0 auto 86px;max-width:620px;color:#222}
+    .info{width:100%;max-width:590px;margin:0 auto;text-align:left}
+    .row{display:grid;grid-template-columns:180px 1fr;align-items:baseline;margin:24px 0;font-size:27px;line-height:1.45}
+    .label{color:#8a8a8a}.value{color:#171717;word-break:break-all}.amount{font-weight:500}
+    .foot{position:fixed;left:50%;transform:translateX(-50%);bottom:62px;width:calc(100% - 48px);max-width:620px;text-align:center;color:#b5b5b5;font-size:21px;line-height:1.6}
+    @media(max-width:700px){.generator{padding:14px;margin:14px auto}.panel{padding:18px}.buttons{grid-template-columns:1fr}.invoice-view{padding:0 18px 34px}.home{left:18px;top:22px}.more{right:18px;top:22px}.content{padding-top:155px}.title{font-size:34px;margin-bottom:42px}.notice{font-size:22px;margin-bottom:72px;line-height:1.65}.row{grid-template-columns:140px 1fr;font-size:22px;margin:22px 0}.foot{font-size:17px;bottom:42px;width:calc(100% - 36px)}}
+    @media(max-width:420px){.content{padding-top:150px}.title{font-size:31px}.notice{font-size:20px}.row{grid-template-columns:125px 1fr;font-size:20px}.foot{font-size:16px}}
   </style>
 </head>
 <body>
-<div class="wrap">
-  <section class="card" id="editor">
-    <div class="brand">
-      <h1>企业信息二维码页生成器</h1>
-      <p>填写资料后生成分享链接和二维码。客户打开链接或扫码，就能直接看到公司介绍、联系人、产品和联系方式。</p>
-    </div>
+  <section class="generator" id="generator">
+    <div class="panel">
+      <h1>发票信息链接生成器</h1>
+      <div class="desc">填写发票号码、合计金额和开票日期，生成一个可分享的网址和二维码。打开链接后会显示为简洁的“发票信息”页面。</div>
 
-    <div class="grid">
-      <div class="field"><label>公司/项目名称</label><input id="name" placeholder="例如：湖南省天亮农业技术开发有限公司"></div>
-      <div class="field"><label>页面副标题</label><input id="subtitle" placeholder="例如：智慧农业设施设备综合服务商"></div>
-      <div class="field"><label>联系人</label><input id="contact" placeholder="例如：柳经理"></div>
-      <div class="field"><label>联系电话</label><input id="phone" placeholder="例如：13800000000"></div>
-      <div class="field full"><label>地址</label><input id="address" placeholder="公司地址 / 项目地址"></div>
-      <div class="field full"><label>主营产品</label><input id="products" placeholder="用逗号分隔，例如：温室大棚, 水肥一体化, 育苗基质, 烤房"></div>
-      <div class="field full"><label>公司或项目介绍</label><textarea id="intro" placeholder="填写公司介绍、项目说明、业务优势、服务范围等"></textarea></div>
-      <div class="field full"><label>顶部图片链接（可选）</label><input id="image" placeholder="https://...jpg / png"><div class="hint">建议使用公开可访问的图片网址；不填则使用简洁深色顶部。</div></div>
-      <div class="field"><label>按钮名称（可选）</label><input id="buttonText" placeholder="例如：查看公司官网"></div>
-      <div class="field"><label>按钮链接（可选）</label><input id="buttonUrl" placeholder="https://..."></div>
-    </div>
+      <div class="field"><label for="invoiceNo">发票号码</label><input id="invoiceNo" placeholder="例如：26432000001833663121"></div>
+      <div class="field"><label for="amount">合计金额（含税）</label><input id="amount" placeholder="例如：240042.60"></div>
+      <div class="field"><label for="date">开票日期</label><input id="date" placeholder="例如：2026.08.05"></div>
 
-    <div class="btns">
-      <button class="btn primary" id="generate">生成链接 + 二维码</button>
-      <button class="btn dark" id="preview">预览页面</button>
-      <button class="btn light" id="clear">清空</button>
-    </div>
-
-    <div class="result" id="result">
-      <h2>分享链接</h2>
-      <div class="share-url" id="shareUrl"></div>
-      <div class="btns">
-        <button class="btn dark" id="copy">复制链接</button>
-        <button class="btn light" id="open">打开分享页</button>
-        <button class="btn light" id="download">下载二维码 PNG</button>
+      <div class="buttons">
+        <button class="btn primary" id="generateBtn">生成链接 + 二维码</button>
+        <button class="btn secondary" id="clearBtn">清空</button>
       </div>
-      <div class="qr"><div id="qrcode"></div></div>
+
+      <div class="result" id="result">
+        <div class="url" id="shareUrl"></div>
+        <div class="buttons">
+          <button class="btn primary" id="copyBtn">复制链接</button>
+          <button class="btn secondary" id="previewBtn">打开预览</button>
+        </div>
+        <div class="qr"><div id="qrcode"></div></div>
+        <button class="btn primary" id="downloadBtn" style="width:100%;margin-top:12px">下载二维码 PNG</button>
+      </div>
     </div>
   </section>
 
-  <section class="card profile" id="profile">
-    <div class="hero" id="hero">
-      <img id="heroImage" alt="企业图片" style="display:none">
-      <div class="overlay">
-        <div><h1 id="pName">企业信息</h1><div class="subtitle" id="pSubtitle"></div></div>
+  <section class="invoice-view" id="invoiceView">
+    <a class="home" href="./" aria-label="返回">⌂</a>
+    <div class="more">•••</div>
+    <div class="content">
+      <h1 class="title">发票信息</h1>
+      <div class="notice">以下信息仅为发票二维码所含信息，并不<br>代表查验发票真伪的结果。</div>
+      <div class="info">
+        <div class="row"><div class="label">发票号码</div><div class="value" id="vNo"></div></div>
+        <div class="row"><div class="label">合计金额</div><div class="value amount" id="vAmount"></div></div>
+        <div class="row"><div class="label">开票日期</div><div class="value" id="vDate"></div></div>
       </div>
     </div>
-    <div class="section" id="introSection"><h2>简介</h2><div class="intro" id="pIntro"></div></div>
-    <div class="section" id="productSection"><h2>主营产品 / 服务</h2><div class="products" id="pProducts"></div></div>
-    <div class="section"><h2>联系信息</h2><div class="contact">
-      <div class="item" id="contactItem"><b>联系人</b><span id="pContact"></span></div>
-      <div class="item" id="phoneItem"><b>联系电话</b><span id="pPhone"></span></div>
-      <div class="item" id="addressItem" style="grid-column:1/-1"><b>地址</b><span id="pAddress"></span></div>
-    </div></div>
-    <div class="actions" id="actions"></div>
-    <a class="back" href="./">← 返回生成器</a>
+    <div class="foot">如需查验发票真伪，请通过税务机关提供的官方渠道进行查验。</div>
   </section>
-  <div class="footer">Powered by GitHub Pages</div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-<script>
-const ids=['name','subtitle','contact','phone','address','products','intro','image','buttonText','buttonUrl'];
-const $=id=>document.getElementById(id);
-function dataFromForm(){const d={};ids.forEach(id=>d[id]=$(id).value.trim());return d}
-function buildUrl(){const d=dataFromForm();if(!d.name&&!d.intro){alert('请至少填写公司/项目名称或介绍。');return null}const u=new URL(location.href);u.search='';u.hash='';u.searchParams.set('view','1');ids.forEach(k=>{if(d[k])u.searchParams.set(k,d[k])});return u.toString()}
-function makeQR(url){$('qrcode').innerHTML='';new QRCode($('qrcode'),{text:url,width:270,height:270,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M})}
-function generate(){const u=buildUrl();if(!u)return;$('shareUrl').textContent=u;makeQR(u);$('result').style.display='block';$('result').scrollIntoView({behavior:'smooth'})}
-function openPreview(){const u=buildUrl();if(u)window.open(u,'_blank')}
-$('generate').onclick=generate;$('preview').onclick=openPreview;$('open').onclick=()=>{const u=$('shareUrl').textContent;if(u)window.open(u,'_blank')};$('clear').onclick=()=>{ids.forEach(id=>$(id).value='');$('result').style.display='none';$('qrcode').innerHTML=''};
-$('copy').onclick=async()=>{const u=$('shareUrl').textContent;if(!u)return;try{await navigator.clipboard.writeText(u);alert('链接已复制。')}catch(e){prompt('请复制链接：',u)}};
-$('download').onclick=()=>{const c=$('qrcode').querySelector('canvas'),i=$('qrcode').querySelector('img');const src=c?c.toDataURL('image/png'):(i?i.src:'');if(!src){alert('请先生成二维码。');return}const a=document.createElement('a');a.href=src;a.download='企业信息二维码.png';document.body.appendChild(a);a.click();a.remove()};
-function hideIfEmpty(el,val){if(!val)el.style.display='none'}
-function renderProfile(){const p=new URLSearchParams(location.search);if(p.get('view')!=='1')return;const d={};ids.forEach(k=>d[k]=p.get(k)||'');$('editor').style.display='none';$('profile').style.display='block';document.title=d.name||'企业信息';$('pName').textContent=d.name||'企业信息';$('pSubtitle').textContent=d.subtitle;hideIfEmpty($('pSubtitle'),d.subtitle);$('pIntro').textContent=d.intro;hideIfEmpty($('introSection'),d.intro);$('pProducts').innerHTML='';if(d.products){d.products.split(/[,，]/).map(x=>x.trim()).filter(Boolean).forEach(x=>{const s=document.createElement('span');s.className='tag';s.textContent=x;$('pProducts').appendChild(s)})}else $('productSection').style.display='none';$('pContact').textContent=d.contact;hideIfEmpty($('contactItem'),d.contact);$('pPhone').textContent=d.phone;hideIfEmpty($('phoneItem'),d.phone);$('pAddress').textContent=d.address;hideIfEmpty($('addressItem'),d.address);if(d.image){$('heroImage').src=d.image;$('heroImage').style.display='block'}const ac=$('actions');if(d.phone){const a=document.createElement('a');a.className='action call';a.href='tel:'+d.phone.replace(/\s/g,'');a.textContent='拨打电话';ac.appendChild(a)}if(d.buttonUrl){const a=document.createElement('a');a.className='action link';a.href=d.buttonUrl;a.target='_blank';a.rel='noopener';a.textContent=d.buttonText||'打开链接';ac.appendChild(a)}if(!d.phone&&!d.buttonUrl)ac.style.display='none'}
-renderProfile();
-</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script>
+    const $=id=>document.getElementById(id);
+    function formatAmount(v){
+      v=(v||'').trim();
+      if(!v) return '';
+      v=v.replace(/^¥/,'').replace(/,/g,'');
+      const n=Number(v);
+      if(Number.isFinite(n)) return '¥'+n.toFixed(2)+'(含税)';
+      return '¥'+v+'(含税)';
+    }
+    function buildUrl(){
+      const no=$('invoiceNo').value.trim();
+      const amount=$('amount').value.trim();
+      const date=$('date').value.trim();
+      if(!no||!amount||!date){alert('请填写发票号码、合计金额和开票日期。');return null;}
+      const u=new URL(location.href);u.search='';u.hash='';
+      u.searchParams.set('view','invoice');
+      u.searchParams.set('no',no);
+      u.searchParams.set('amount',amount);
+      u.searchParams.set('date',date);
+      return u.toString();
+    }
+    function generate(){
+      const u=buildUrl();if(!u)return;
+      $('shareUrl').textContent=u;
+      $('qrcode').innerHTML='';
+      new QRCode($('qrcode'),{text:u,width:260,height:260,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+      $('result').style.display='block';
+      $('result').scrollIntoView({behavior:'smooth',block:'start'});
+    }
+    $('generateBtn').onclick=generate;
+    $('clearBtn').onclick=()=>{$('invoiceNo').value='';$('amount').value='';$('date').value='';$('result').style.display='none';$('qrcode').innerHTML=''};
+    $('previewBtn').onclick=()=>{const u=buildUrl();if(u)window.open(u,'_blank')};
+    $('copyBtn').onclick=async()=>{const u=$('shareUrl').textContent;if(!u)return;try{await navigator.clipboard.writeText(u);alert('链接已复制。')}catch(e){prompt('请复制下面的链接：',u)}};
+    $('downloadBtn').onclick=()=>{const c=$('qrcode').querySelector('canvas');const i=$('qrcode').querySelector('img');const src=c?c.toDataURL('image/png'):(i?i.src:'');if(!src){alert('请先生成二维码。');return;}const a=document.createElement('a');a.href=src;a.download='发票信息二维码.png';document.body.appendChild(a);a.click();a.remove()};
+
+    function renderInvoice(){
+      const p=new URLSearchParams(location.search);
+      if(p.get('view')!=='invoice')return;
+      const no=p.get('no')||'';const amount=p.get('amount')||'';const date=p.get('date')||'';
+      $('generator').style.display='none';$('invoiceView').style.display='block';
+      $('vNo').textContent=no;
+      $('vAmount').textContent=formatAmount(amount);
+      $('vDate').textContent=date;
+      document.title='发票信息';
+    }
+    renderInvoice();
+  </script>
 </body>
 </html>
