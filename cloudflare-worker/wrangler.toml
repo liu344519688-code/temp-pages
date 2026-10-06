@@ -1,0 +1,9 @@
+name = "invoice-qr-dispatcher"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+# IMPORTANT:
+# Do NOT put GITHUB_TOKEN here.
+# Configure it as a Cloudflare Worker secret:
+#   npx wrangler secret put GITHUB_TOKEN
