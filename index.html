@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>发票信息链接生成器</title>
   <meta name="description" content="生成发票信息展示链接和二维码。" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <style>
     *{box-sizing:border-box}
     html,body{margin:0;padding:0;background:#fff;color:#111;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif}
@@ -17,46 +19,50 @@
     .result{display:none;margin-top:24px;border-top:1px solid #eee;padding-top:20px}.url{font-size:13px;line-height:1.6;word-break:break-all;background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:12px}.qr{text-align:center;margin-top:18px}.qr>div{display:inline-block;padding:12px;border:1px solid #eee;background:#fff}.qr img,.qr canvas{display:block}
 
     .invoice-view{display:none;min-height:100vh;background:#fff;position:relative;padding:0 24px 42px;overflow:hidden}
-
-    /* 顶部区域：按参考图还原小程序样式 */
-    .mini-topbar{height:112px;position:relative;width:100%;max-width:828px;margin:0 auto}
-    .home-btn{position:absolute;left:0;top:29px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#000}
-    .home-btn svg{width:36px;height:36px;display:block;fill:#000}
-    .capsule{position:absolute;right:0;top:21px;width:168px;height:62px;border:1px solid #ececec;border-radius:31px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 .5px rgba(0,0,0,.01)}
+    .mini-topbar{height:104px;position:relative;width:100%;max-width:828px;margin:0 auto}
+    .home-btn{position:absolute;left:0;top:26px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#000}
+    .home-btn svg{width:28px;height:28px;display:block;fill:#000}
+    .capsule{position:absolute;right:0;top:20px;width:118px;height:48px;border:1px solid #ececec;border-radius:24px;background:#fff;display:flex;align-items:center;justify-content:center}
     .capsule-left,.capsule-right{height:100%;display:flex;align-items:center;justify-content:center}
-    .capsule-left{width:84px;border-right:1px solid #efefef;gap:7px}
-    .dot{width:10px;height:10px;border-radius:50%;background:#222;display:block}
-    .capsule-right{width:84px}
-    .target{width:31px;height:31px;border:4px solid #222;border-radius:50%;position:relative}
-    .target::after{content:"";position:absolute;left:50%;top:50%;width:9px;height:9px;border-radius:50%;background:#222;transform:translate(-50%,-50%)}
+    .capsule-left{width:59px;border-right:1px solid #efefef;gap:5px}
+    .dot{width:7px;height:7px;border-radius:50%;background:#222;display:block}
+    .capsule-right{width:59px}
+    .target{width:25px;height:25px;border:3px solid #222;border-radius:50%;position:relative}
+    .target::after{content:"";position:absolute;left:50%;top:50%;width:7px;height:7px;border-radius:50%;background:#222;transform:translate(-50%,-50%)}
 
-    .content{max-width:620px;margin:0 auto;padding-top:91px;text-align:center}
-    .title{font-size:42px;line-height:1.2;margin:0 0 48px;font-weight:800;letter-spacing:1px}
-    .notice{font-size:26px;line-height:1.65;margin:0 auto 86px;max-width:620px;color:#222}
-    .info{width:100%;max-width:590px;margin:0 auto;text-align:left}
-    .row{display:grid;grid-template-columns:180px 1fr;align-items:baseline;margin:24px 0;font-size:27px;line-height:1.45}
-    .label{color:#8a8a8a}.value{color:#171717;word-break:break-all}.amount{font-weight:500}
-    .foot{position:fixed;left:50%;transform:translateX(-50%);bottom:62px;width:calc(100% - 48px);max-width:620px;text-align:center;color:#b5b5b5;font-size:21px;line-height:1.6}
+    .content{max-width:620px;margin:0 auto;padding-top:58px;text-align:center}
+    .title{font-size:28px;line-height:1.2;margin:0 0 38px;font-weight:700;letter-spacing:.5px}
+    .notice{font-size:18px;line-height:1.6;margin:0 auto 66px;max-width:520px;color:#222;font-weight:400}
+    .info{width:100%;max-width:520px;margin:0 auto;text-align:left}
+    .row{display:grid;grid-template-columns:150px 1fr;align-items:baseline;margin:19px 0;font-size:18px;line-height:1.45;font-weight:400}
+    .label{color:#8b8b8b}.value{color:#171717;word-break:break-all}.amount{font-weight:500}
+    .foot{position:fixed;left:50%;transform:translateX(-50%);bottom:52px;width:calc(100% - 48px);max-width:560px;text-align:center;color:#b8b8b8;font-size:15px;line-height:1.6;font-weight:400}
 
     @media(max-width:700px){
       .generator{padding:14px;margin:14px auto}.panel{padding:18px}.buttons{grid-template-columns:1fr}
       .invoice-view{padding:0 22px 34px}
-      .mini-topbar{height:104px}
-      .home-btn{left:0;top:24px;width:38px;height:38px}.home-btn svg{width:34px;height:34px}
-      .capsule{right:0;top:18px;width:166px;height:60px;border-radius:30px}
-      .capsule-left,.capsule-right{width:83px}.dot{width:9px;height:9px}.target{width:30px;height:30px;border-width:4px}.target::after{width:8px;height:8px}
-      .content{padding-top:76px}
-      .title{font-size:34px;margin-bottom:42px}
-      .notice{font-size:22px;margin-bottom:72px;line-height:1.65}
-      .row{grid-template-columns:140px 1fr;font-size:22px;margin:22px 0}
-      .foot{font-size:17px;bottom:42px;width:calc(100% - 44px)}
+      .mini-topbar{height:96px}
+      .home-btn{left:0;top:23px;width:32px;height:32px}.home-btn svg{width:26px;height:26px}
+      .capsule{right:0;top:18px;width:106px;height:44px;border-radius:22px}
+      .capsule-left,.capsule-right{width:53px}.dot{width:6px;height:6px}.target{width:23px;height:23px;border-width:3px}.target::after{width:6px;height:6px}
+      .content{padding-top:48px}
+      .title{font-size:24px;margin-bottom:34px}
+      .notice{font-size:17px;margin-bottom:58px;line-height:1.58;max-width:360px}
+      .info{max-width:350px}
+      .row{grid-template-columns:108px 1fr;font-size:16px;margin:17px 0;line-height:1.42}
+      .foot{font-size:14px;bottom:38px;width:calc(100% - 44px);max-width:360px;line-height:1.58}
     }
     @media(max-width:420px){
       .invoice-view{padding-left:18px;padding-right:18px}
-      .mini-topbar{height:100px}
-      .home-btn{top:23px}.home-btn svg{width:32px;height:32px}
-      .capsule{top:17px;width:150px;height:56px;border-radius:28px}.capsule-left,.capsule-right{width:75px}.dot{width:8px;height:8px}.target{width:28px;height:28px;border-width:3.5px}.target::after{width:8px;height:8px}
-      .content{padding-top:70px}.title{font-size:31px}.notice{font-size:20px}.row{grid-template-columns:125px 1fr;font-size:20px}.foot{font-size:16px;width:calc(100% - 36px)}
+      .mini-topbar{height:92px}
+      .home-btn{top:22px;width:30px;height:30px}.home-btn svg{width:24px;height:24px}
+      .capsule{top:17px;width:96px;height:42px;border-radius:21px}.capsule-left,.capsule-right{width:48px}.dot{width:5.5px;height:5.5px}.target{width:22px;height:22px;border-width:2.8px}.target::after{width:6px;height:6px}
+      .content{padding-top:38px}
+      .title{font-size:21px;margin-bottom:31px;letter-spacing:.2px}
+      .notice{font-size:15px;line-height:1.62;margin-bottom:52px;max-width:345px}
+      .info{max-width:345px}
+      .row{grid-template-columns:104px 1fr;font-size:15px;margin:15px 0;line-height:1.42}
+      .foot{font-size:13px;bottom:34px;width:calc(100% - 36px);max-width:345px;line-height:1.6}
     }
   </style>
 </head>
@@ -147,17 +153,17 @@
     $('clearBtn').onclick=()=>{$('invoiceNo').value='';$('amount').value='';$('date').value='';$('result').style.display='none';$('qrcode').innerHTML=''};
     $('previewBtn').onclick=()=>{const u=buildUrl();if(u)window.open(u,'_blank')};
     $('copyBtn').onclick=async()=>{const u=$('shareUrl').textContent;if(!u)return;try{await navigator.clipboard.writeText(u);alert('链接已复制。')}catch(e){prompt('请复制下面的链接：',u)}};
-    $('downloadBtn').onclick=()=>{const c=$('qrcode').querySelector('canvas');const i=$('qrcode').querySelector('img');const src=c?c.toDataURL('image/png'):(i?i.src:'');if(!src){alert('请先生成二维码。');return;}const a=document.createElement('a');a.href=src;a.download='发票信息二维码.png';document.body.appendChild(a);a.click();a.remove()};
+    $('downloadBtn').onclick=()=>{const c=$('qrcode').querySelector('canvas'),i=$('qrcode').querySelector('img');const src=c?c.toDataURL('image/png'):(i?i.src:'');if(!src){alert('请先生成二维码。');return;}const a=document.createElement('a');a.href=src;a.download='发票信息二维码.png';document.body.appendChild(a);a.click();a.remove()};
 
     function renderInvoice(){
       const p=new URLSearchParams(location.search);
       if(p.get('view')!=='invoice')return;
-      const no=p.get('no')||'';const amount=p.get('amount')||'';const date=p.get('date')||'';
+      const no=p.get('no')||'', amount=p.get('amount')||'', date=p.get('date')||'';
       $('generator').style.display='none';$('invoiceView').style.display='block';
       $('vNo').textContent=no;
       $('vAmount').textContent=formatAmount(amount);
       $('vDate').textContent=date;
-      document.title='发票信息';
+      document.title='\u200B';
     }
     renderInvoice();
   </script>
