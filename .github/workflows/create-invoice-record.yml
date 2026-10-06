@@ -119,8 +119,7 @@ jobs:
           </html>'''
           (page_dir / 'index.html').write_text(page_html, encoding='utf-8')
 
-          # Official QR: short record URL + M correction. For current GitHub URL length,
-          # this fits QR Version 4 (33x33 modules), matching the reference density much more closely.
+          # Official QR: short record URL + M correction, fixed Version 4 (33x33 modules).
           qr = qrcode.QRCode(
               version=4,
               error_correction=qrcode.constants.ERROR_CORRECT_M,
@@ -133,19 +132,34 @@ jobs:
           assert len(matrix) == 33, f'Expected 33 modules, got {len(matrix)}'
 
           img = qr.make_image(fill_color='black', back_color='white').convert('RGB')
-          # 33 * 9 = 297; place on 300x300 canvas with a tiny white margin like the reference image.
           canvas = Image.new('RGB', (300,300), 'white')
           canvas.paste(img, (1,1))
           draw = ImageDraw.Draw(canvas)
           cx = cy = 150
-          patch = 45
-          draw.rectangle([cx-patch//2, cy-patch//2, cx+patch//2, cy+patch//2], fill='white')
+
+          # Reference-calibrated center mark:
+          # white patch 63x63 px; pale gold #FAEFAD; centered Songti-style 税.
+          patch = 63
+          p0 = cx - patch // 2
+          p1 = cx + patch // 2
+          draw.rectangle([p0, p0, p1, p1], fill='white')
+
           font_path = '/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc'
-          font = ImageFont.truetype(font_path, 39)
-          text='税'
-          bbox=draw.textbbox((0,0),text,font=font)
-          tw,th=bbox[2]-bbox[0],bbox[3]-bbox[1]
-          draw.text((cx-tw/2,cy-th/2-2),text,font=font,fill=(244,216,107))
+          font = ImageFont.truetype(font_path, 48)
+          text = '税'
+          bbox = draw.textbbox((0,0), text, font=font)
+          # Center by the actual glyph bbox, not the font baseline metrics.
+          tx = cx - (bbox[0] + bbox[2]) / 2
+          ty = cy - (bbox[1] + bbox[3]) / 2
+
+          # Render to a mask then threshold it so the glyph uses one exact reference gold,
+          # avoiding darker anti-aliased edge colors.
+          mask = Image.new('L', (300,300), 0)
+          md = ImageDraw.Draw(mask)
+          md.text((tx,ty), text, font=font, fill=255)
+          mask = mask.point(lambda v: 255 if v >= 128 else 0)
+          gold = Image.new('RGB', (300,300), (250,239,173))
+          canvas.paste(gold, (0,0), mask)
           canvas.save(page_dir / 'qrcode.png')
 
           records.append({
