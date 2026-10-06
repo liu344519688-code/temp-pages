@@ -3,228 +3,112 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>链接二维码生成器</title>
-  <meta name="description" content="输入任意链接，一键生成二维码并下载。" />
+  <title>信息分享页</title>
+  <meta name="description" content="生成可分享的文字信息链接和二维码。" />
   <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
-      background: linear-gradient(135deg, #f4f8ff 0%, #eefaf4 100%);
-      color: #1f2937;
-    }
-    .card {
-      width: 100%;
-      max-width: 560px;
-      background: rgba(255,255,255,.96);
-      border-radius: 22px;
-      padding: 32px;
-      box-shadow: 0 18px 50px rgba(15, 23, 42, .12);
-      border: 1px solid rgba(148,163,184,.18);
-    }
-    h1 {
-      margin: 0 0 10px;
-      font-size: 30px;
-      text-align: center;
-    }
-    .sub {
-      margin: 0 0 26px;
-      text-align: center;
-      color: #64748b;
-      line-height: 1.7;
-    }
-    label {
-      display: block;
-      font-weight: 700;
-      margin-bottom: 9px;
-    }
-    input {
-      width: 100%;
-      height: 48px;
-      border: 1px solid #cbd5e1;
-      border-radius: 12px;
-      padding: 0 14px;
-      font-size: 16px;
-      outline: none;
-      transition: .2s;
-    }
-    input:focus {
-      border-color: #16a34a;
-      box-shadow: 0 0 0 4px rgba(22,163,74,.1);
-    }
-    .buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 14px;
-    }
-    button {
-      height: 46px;
-      border: 0;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform .15s ease, opacity .15s ease;
-    }
-    button:hover { transform: translateY(-1px); }
-    button:active { transform: translateY(0); }
-    .primary { background: #16a34a; color: white; }
-    .secondary { background: #e2e8f0; color: #334155; }
-    .result {
-      margin-top: 26px;
-      display: none;
-      text-align: center;
-    }
-    #qrcode {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 14px;
-      border-radius: 16px;
-      background: #fff;
-      border: 1px solid #e2e8f0;
-    }
-    #qrcode img, #qrcode canvas { display:block; max-width:100%; height:auto; }
-    .tips {
-      margin-top: 12px;
-      color: #64748b;
-      font-size: 14px;
-      word-break: break-all;
-      line-height: 1.6;
-    }
-    .download {
-      margin-top: 14px;
-      width: 100%;
-      background: #0f172a;
-      color: white;
-    }
-    .footer {
-      margin-top: 24px;
-      text-align: center;
-      color: #94a3b8;
-      font-size: 13px;
-    }
-    @media (max-width: 520px) {
-      .card { padding: 24px 18px; }
-      .buttons { grid-template-columns: 1fr; }
-      h1 { font-size: 26px; }
-    }
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",Arial,sans-serif;background:linear-gradient(135deg,#f3f8ff,#effaf2);color:#172033;padding:24px}.wrap{max-width:760px;margin:0 auto}.card{background:#fff;border-radius:22px;padding:30px;box-shadow:0 18px 50px rgba(15,23,42,.10);border:1px solid #e7edf3}.brand{text-align:center;margin-bottom:24px}.brand h1{margin:0 0 8px;font-size:30px}.brand p{margin:0;color:#64748b;line-height:1.7}.field{margin-top:18px}.field label{display:block;font-weight:700;margin-bottom:8px}.field input,.field textarea{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:12px 14px;font-size:16px;font-family:inherit;outline:none}.field input{height:48px}.field textarea{min-height:180px;resize:vertical;line-height:1.75}.field input:focus,.field textarea:focus{border-color:#16a34a;box-shadow:0 0 0 4px rgba(22,163,74,.10)}.btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.btn{border:0;border-radius:12px;height:48px;font-size:16px;font-weight:700;cursor:pointer}.primary{background:#16a34a;color:#fff}.dark{background:#0f172a;color:#fff}.light{background:#e2e8f0;color:#334155}.result{display:none;margin-top:28px;padding-top:24px;border-top:1px solid #e2e8f0}.result h2{font-size:20px;margin:0 0 12px}.share-url{word-break:break-all;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;line-height:1.6;font-size:14px}.qr{text-align:center;margin-top:20px}.qr #qrcode{display:inline-flex;padding:14px;background:#fff;border:1px solid #e2e8f0;border-radius:16px}.qr img,.qr canvas{display:block}.info-view{display:none}.info-head{border-bottom:1px solid #e2e8f0;padding-bottom:18px;margin-bottom:20px}.info-title{font-size:30px;font-weight:800;margin:0 0 10px;line-height:1.35}.info-sub{color:#64748b;font-size:14px}.info-content{font-size:17px;line-height:1.9;white-space:pre-wrap;word-break:break-word}.back{display:inline-block;margin-top:28px;color:#15803d;text-decoration:none;font-weight:700}.footer{text-align:center;margin-top:22px;color:#94a3b8;font-size:13px}@media(max-width:560px){body{padding:14px}.card{padding:22px 17px;border-radius:18px}.btns{grid-template-columns:1fr}.brand h1,.info-title{font-size:25px}}
   </style>
 </head>
 <body>
-  <main class="card">
-    <h1>链接二维码生成器</h1>
-    <p class="sub">粘贴任意网页链接，一键生成二维码。二维码在浏览器本地生成，不上传链接内容。</p>
-
-    <label for="urlInput">请输入链接</label>
-    <input id="urlInput" type="text" inputmode="url" placeholder="例如：https://example.com" autocomplete="off" />
-
-    <div class="buttons">
-      <button class="primary" id="generateBtn">生成二维码</button>
-      <button class="secondary" id="clearBtn">清空</button>
+<div class="wrap">
+  <section class="card" id="editorView">
+    <div class="brand">
+      <h1>文字信息链接生成器</h1>
+      <p>输入标题和文字内容，自动生成一个可分享的网址和二维码。别人打开链接或扫码后，就能直接看到您填写的信息。</p>
     </div>
 
-    <section class="result" id="result">
-      <div id="qrcode"></div>
-      <div class="tips" id="urlText"></div>
-      <button class="download" id="downloadBtn">下载二维码 PNG</button>
-    </section>
+    <div class="field">
+      <label for="titleInput">标题</label>
+      <input id="titleInput" maxlength="120" placeholder="例如：湖南省天亮农业技术开发有限公司" />
+    </div>
 
-    <div class="footer">Powered by GitHub Pages</div>
-  </main>
+    <div class="field">
+      <label for="contentInput">文字信息</label>
+      <textarea id="contentInput" maxlength="5000" placeholder="例如：公司介绍、项目说明、联系人、电话、地址、产品信息等……"></textarea>
+    </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-  <script>
-    const input = document.getElementById('urlInput');
-    const generateBtn = document.getElementById('generateBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const result = document.getElementById('result');
-    const qrWrap = document.getElementById('qrcode');
-    const urlText = document.getElementById('urlText');
-    const downloadBtn = document.getElementById('downloadBtn');
+    <div class="btns">
+      <button class="btn primary" id="generateBtn">生成信息链接 + 二维码</button>
+      <button class="btn light" id="clearBtn">清空</button>
+    </div>
 
-    function normalizeUrl(value) {
-      let v = value.trim();
-      if (!v) return '';
-      if (!/^https?:\/\//i.test(v)) v = 'https://' + v;
-      return v;
-    }
+    <div class="result" id="result">
+      <h2>分享链接</h2>
+      <div class="share-url" id="shareUrl"></div>
+      <div class="btns">
+        <button class="btn dark" id="copyBtn">复制链接</button>
+        <button class="btn light" id="previewBtn">打开预览</button>
+      </div>
+      <div class="qr"><div id="qrcode"></div></div>
+      <button class="btn dark" id="downloadBtn" style="width:100%;margin-top:14px">下载二维码 PNG</button>
+    </div>
+  </section>
 
-    function generateQR() {
-      const url = normalizeUrl(input.value);
-      if (!url) {
-        alert('请先输入一个链接。');
-        input.focus();
-        return;
-      }
+  <section class="card info-view" id="infoView">
+    <div class="info-head">
+      <h1 class="info-title" id="infoTitle"></h1>
+      <div class="info-sub">信息展示页</div>
+    </div>
+    <div class="info-content" id="infoContent"></div>
+    <a class="back" href="./">← 返回信息生成器</a>
+  </section>
 
-      try {
-        new URL(url);
-      } catch (e) {
-        alert('链接格式不正确，请重新输入。');
-        return;
-      }
+  <div class="footer">Powered by GitHub Pages</div>
+</div>
 
-      qrWrap.innerHTML = '';
-      new QRCode(qrWrap, {
-        text: url,
-        width: 280,
-        height: 280,
-        colorDark: '#000000',
-        colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.H
-      });
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+  const editorView=document.getElementById('editorView');
+  const infoView=document.getElementById('infoView');
+  const titleInput=document.getElementById('titleInput');
+  const contentInput=document.getElementById('contentInput');
+  const result=document.getElementById('result');
+  const shareUrl=document.getElementById('shareUrl');
+  const qrWrap=document.getElementById('qrcode');
 
-      urlText.textContent = url;
-      result.style.display = 'block';
-    }
+  function buildShareUrl(){
+    const title=titleInput.value.trim();
+    const content=contentInput.value.trim();
+    if(!title && !content){alert('请至少填写标题或文字内容。');return null;}
+    const url=new URL(location.href);
+    url.search='';
+    url.hash='';
+    if(title) url.searchParams.set('title',title);
+    if(content) url.searchParams.set('text',content);
+    url.searchParams.set('view','1');
+    return url.toString();
+  }
 
-    function downloadQR() {
-      const canvas = qrWrap.querySelector('canvas');
-      const img = qrWrap.querySelector('img');
-      let dataUrl = '';
+  function generate(){
+    const url=buildShareUrl();
+    if(!url) return;
+    shareUrl.textContent=url;
+    qrWrap.innerHTML='';
+    new QRCode(qrWrap,{text:url,width:280,height:280,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+    result.style.display='block';
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  }
 
-      if (canvas) dataUrl = canvas.toDataURL('image/png');
-      else if (img) dataUrl = img.src;
+  function showInfoPage(){
+    const p=new URLSearchParams(location.search);
+    if(p.get('view')!=='1') return false;
+    const title=p.get('title')||'信息展示';
+    const text=p.get('text')||'';
+    document.title=title;
+    document.getElementById('infoTitle').textContent=title;
+    document.getElementById('infoContent').textContent=text;
+    editorView.style.display='none';
+    infoView.style.display='block';
+    return true;
+  }
 
-      if (!dataUrl) {
-        alert('请先生成二维码。');
-        return;
-      }
+  document.getElementById('generateBtn').addEventListener('click',generate);
+  document.getElementById('clearBtn').addEventListener('click',()=>{titleInput.value='';contentInput.value='';result.style.display='none';qrWrap.innerHTML='';titleInput.focus();});
+  document.getElementById('copyBtn').addEventListener('click',async()=>{const url=shareUrl.textContent;if(!url)return;try{await navigator.clipboard.writeText(url);alert('链接已复制。');}catch(e){prompt('请复制下面的链接：',url);}});
+  document.getElementById('previewBtn').addEventListener('click',()=>{const url=shareUrl.textContent;if(url)window.open(url,'_blank');});
+  document.getElementById('downloadBtn').addEventListener('click',()=>{const canvas=qrWrap.querySelector('canvas');const img=qrWrap.querySelector('img');let src=canvas?canvas.toDataURL('image/png'):(img?img.src:'');if(!src){alert('请先生成二维码。');return;}const a=document.createElement('a');a.href=src;a.download='信息二维码.png';document.body.appendChild(a);a.click();a.remove();});
 
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = 'qrcode.png';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    }
-
-    generateBtn.addEventListener('click', generateQR);
-    clearBtn.addEventListener('click', () => {
-      input.value = '';
-      qrWrap.innerHTML = '';
-      urlText.textContent = '';
-      result.style.display = 'none';
-      input.focus();
-    });
-    downloadBtn.addEventListener('click', downloadQR);
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter') generateQR();
-    });
-
-    const params = new URLSearchParams(location.search);
-    const preset = params.get('url');
-    if (preset) {
-      input.value = preset;
-      generateQR();
-    }
-  </script>
+  showInfoPage();
+</script>
 </body>
 </html>
