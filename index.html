@@ -3,196 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>发票信息链接生成器</title>
-  <meta name="description" content="生成发票信息展示链接和二维码。" />
+  <title>发票二维码管理</title>
+  <meta name="description" content="发票信息短链接、二维码与历史记录管理。" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <style>
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0;background:#fff;color:#111;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif}
-    body{min-height:100vh}
-    .generator{max-width:720px;margin:32px auto;padding:24px}
-    .panel{border:1px solid #e5e7eb;border-radius:18px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
-    .panel h1{margin:0 0 8px;font-size:28px}.desc{color:#6b7280;line-height:1.7;margin-bottom:24px}
-    .field{margin:16px 0}.field label{display:block;font-weight:700;margin-bottom:8px}.field input{width:100%;height:46px;border:1px solid #d1d5db;border-radius:10px;padding:0 12px;font-size:16px;outline:none}.field input:focus{border-color:#111}
-    .buttons{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}.btn{height:46px;border:0;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer}.primary{background:#111;color:#fff}.secondary{background:#f3f4f6;color:#111}
-    .result{display:none;margin-top:24px;border-top:1px solid #eee;padding-top:20px}.url{font-size:13px;line-height:1.6;word-break:break-all;background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:12px}.qr{text-align:center;margin-top:18px}.qr>div{display:inline-block;padding:0;border:1px solid #eee;background:#fff;line-height:0}.qr canvas{display:block;width:300px;height:300px;max-width:100%}
+    *{box-sizing:border-box}html,body{margin:0;padding:0;background:#f6f7f9;color:#111;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif}body{min-height:100vh}
+    .admin{max-width:980px;margin:0 auto;padding:28px 18px 50px}.panel{background:#fff;border:1px solid #e7e7e7;border-radius:18px;padding:24px;box-shadow:0 8px 26px rgba(0,0,0,.05)}.panel+.panel{margin-top:18px}
+    .head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.head h1{margin:0;font-size:28px}.sub{margin-top:8px;color:#737373;line-height:1.7}.badge{background:#111;color:#fff;border-radius:999px;padding:7px 12px;font-size:13px;white-space:nowrap}
+    .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:22px}.field label{display:block;font-weight:700;margin-bottom:7px}.field input{width:100%;height:46px;border:1px solid #d1d5db;border-radius:10px;padding:0 12px;font-size:16px;outline:none;background:#fff}.field input:focus{border-color:#111;box-shadow:0 0 0 3px rgba(0,0,0,.05)}
+    .buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.btn{height:44px;border:0;border-radius:10px;padding:0 18px;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.primary{background:#111;color:#fff}.secondary{background:#f0f1f3;color:#111}.outline{background:#fff;color:#111;border:1px solid #d8d8d8}.hint{margin-top:12px;color:#8b8b8b;font-size:13px;line-height:1.65}.preview{display:none;margin-top:18px;padding-top:18px;border-top:1px solid #eee}.url{word-break:break-all;background:#f8f9fa;border:1px solid #e6e6e6;padding:11px;border-radius:9px;font-size:13px}.qr{text-align:center;margin-top:16px}.qr>div{display:inline-block;background:#fff;line-height:0}.qr canvas{display:block;width:300px;height:300px;max-width:100%}
+    .history-head{display:flex;justify-content:space-between;align-items:center;gap:14px}.history-head h2{margin:0;font-size:22px}.count{color:#777;font-size:14px}.table-wrap{overflow:auto;margin-top:16px}.records{width:100%;border-collapse:collapse;min-width:720px}.records th,.records td{padding:13px 10px;border-bottom:1px solid #eee;text-align:left;font-size:14px}.records th{color:#777;font-weight:600;background:#fafafa}.records td:nth-child(3){font-variant-numeric:tabular-nums}.id{font-weight:800}.link-actions{display:flex;gap:7px;white-space:nowrap}.small{height:34px;padding:0 11px;font-size:13px;border-radius:8px}.empty{padding:34px 10px;text-align:center;color:#999}
 
-    .invoice-view{display:none;min-height:100vh;background:#fff;position:relative;padding:0 24px 42px;overflow:hidden}
-    .mini-topbar{height:104px;position:relative;width:100%;max-width:828px;margin:0 auto}
-    .home-btn{position:absolute;left:0;top:26px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#000}
-    .home-btn svg{width:28px;height:28px;display:block;fill:#000}
-    .capsule{position:absolute;right:0;top:20px;width:118px;height:48px;border:1px solid #ececec;border-radius:24px;background:#fff;display:flex;align-items:center;justify-content:center}
-    .capsule-left,.capsule-right{height:100%;display:flex;align-items:center;justify-content:center}
-    .capsule-left{width:59px;border-right:1px solid #efefef;gap:5px}
-    .dot{width:7px;height:7px;border-radius:50%;background:#222;display:block}
-    .capsule-right{width:59px}
-    .target{width:25px;height:25px;border:3px solid #222;border-radius:50%;position:relative}
-    .target::after{content:"";position:absolute;left:50%;top:50%;width:7px;height:7px;border-radius:50%;background:#222;transform:translate(-50%,-50%)}
-
-    .content{max-width:620px;margin:0 auto;padding-top:58px;text-align:center}
-    .title{font-size:28px;line-height:1.2;margin:0 0 38px;font-weight:700;letter-spacing:.5px}
-    .notice{font-size:18px;line-height:1.6;margin:0 auto 66px;max-width:520px;color:#222;font-weight:400}
-    .info{width:100%;max-width:520px;margin:0 auto;text-align:left}
-    .row{display:grid;grid-template-columns:150px 1fr;align-items:baseline;margin:19px 0;font-size:18px;line-height:1.45;font-weight:400}
-    .label{color:#8b8b8b}.value{color:#171717;word-break:break-all}.amount{font-weight:500}
-    .foot{position:fixed;left:50%;transform:translateX(-50%);bottom:52px;width:calc(100% - 48px);max-width:560px;text-align:center;color:#b8b8b8;font-size:15px;line-height:1.6;font-weight:400}
-
-    @media(max-width:700px){
-      .generator{padding:14px;margin:14px auto}.panel{padding:18px}.buttons{grid-template-columns:1fr}
-      .invoice-view{padding:0 22px 34px}
-      .mini-topbar{height:96px}
-      .home-btn{left:0;top:23px;width:32px;height:32px}.home-btn svg{width:26px;height:26px}
-      .capsule{right:0;top:18px;width:106px;height:44px;border-radius:22px}
-      .capsule-left,.capsule-right{width:53px}.dot{width:6px;height:6px}.target{width:23px;height:23px;border-width:3px}.target::after{width:6px;height:6px}
-      .content{padding-top:48px}
-      .title{font-size:24px;margin-bottom:34px}
-      .notice{font-size:17px;margin-bottom:58px;line-height:1.58;max-width:360px}
-      .info{max-width:350px}
-      .row{grid-template-columns:108px 1fr;font-size:16px;margin:17px 0;line-height:1.42}
-      .foot{font-size:14px;bottom:38px;width:calc(100% - 44px);max-width:360px;line-height:1.58}
-    }
-    @media(max-width:420px){
-      .invoice-view{padding-left:18px;padding-right:18px}
-      .mini-topbar{height:92px}
-      .home-btn{top:22px;width:30px;height:30px}.home-btn svg{width:24px;height:24px}
-      .capsule{top:17px;width:96px;height:42px;border-radius:21px}.capsule-left,.capsule-right{width:48px}.dot{width:5.5px;height:5.5px}.target{width:22px;height:22px;border-width:2.8px}.target::after{width:6px;height:6px}
-      .content{padding-top:22px}
-      .title{font-size:22px;margin-bottom:21px;letter-spacing:.2px}
-      .notice{font-size:17px;line-height:1.55;margin-bottom:49px;max-width:345px}
-      .info{max-width:345px}
-      .row{grid-template-columns:108px 1fr;font-size:15px;margin:15px 0;line-height:1.42}
-      .foot{font-size:15px;bottom:52px;width:calc(100% - 36px);max-width:345px;line-height:1.58}
-    }
+    .invoice-view{display:none;min-height:100vh;background:#fff;position:relative;padding:0 24px 42px;overflow:hidden}.mini-topbar{height:104px;position:relative;width:100%;max-width:828px;margin:0 auto}.home-btn{position:absolute;left:0;top:26px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#000}.home-btn svg{width:28px;height:28px;display:block;fill:#000}.capsule{position:absolute;right:0;top:20px;width:118px;height:48px;border:1px solid #ececec;border-radius:24px;background:#fff;display:flex;align-items:center;justify-content:center}.capsule-left,.capsule-right{height:100%;display:flex;align-items:center;justify-content:center}.capsule-left{width:59px;border-right:1px solid #efefef;gap:5px}.dot{width:7px;height:7px;border-radius:50%;background:#222;display:block}.capsule-right{width:59px}.target{width:25px;height:25px;border:3px solid #222;border-radius:50%;position:relative}.target:after{content:"";position:absolute;left:50%;top:50%;width:7px;height:7px;border-radius:50%;background:#222;transform:translate(-50%,-50%)}
+    .content{max-width:620px;margin:0 auto;padding-top:58px;text-align:center}.title{font-size:28px;line-height:1.2;margin:0 0 38px;font-weight:700;letter-spacing:.5px}.notice{font-size:18px;line-height:1.6;margin:0 auto 66px;max-width:520px;color:#222}.info{width:100%;max-width:520px;margin:0 auto;text-align:left}.row{display:grid;grid-template-columns:150px 1fr;align-items:baseline;margin:19px 0;font-size:18px;line-height:1.45}.label{color:#8b8b8b}.value{color:#171717;word-break:break-all}.amount{font-weight:500}.foot{position:fixed;left:50%;transform:translateX(-50%);bottom:52px;width:calc(100% - 48px);max-width:560px;text-align:center;color:#b8b8b8;font-size:15px;line-height:1.6}
+    @media(max-width:720px){.admin{padding:14px 12px 30px}.panel{padding:18px}.head{display:block}.badge{display:inline-block;margin-top:12px}.grid{grid-template-columns:1fr}.history-head{align-items:flex-start}.invoice-view{padding:0 22px 34px}.mini-topbar{height:96px}.home-btn{left:0;top:23px;width:32px;height:32px}.home-btn svg{width:26px;height:26px}.capsule{right:0;top:18px;width:106px;height:44px;border-radius:22px}.capsule-left,.capsule-right{width:53px}.dot{width:6px;height:6px}.target{width:23px;height:23px;border-width:3px}.target:after{width:6px;height:6px}.content{padding-top:48px}.title{font-size:24px;margin-bottom:34px}.notice{font-size:17px;margin-bottom:58px;line-height:1.58;max-width:360px}.info{max-width:350px}.row{grid-template-columns:108px 1fr;font-size:16px;margin:17px 0}.foot{font-size:14px;bottom:38px;width:calc(100% - 44px);max-width:360px}}
+    @media(max-width:420px){.invoice-view{padding-left:18px;padding-right:18px}.mini-topbar{height:92px}.home-btn{top:22px;width:30px;height:30px}.home-btn svg{width:24px;height:24px}.capsule{top:17px;width:96px;height:42px;border-radius:21px}.capsule-left,.capsule-right{width:48px}.dot{width:5.5px;height:5.5px}.target{width:22px;height:22px;border-width:2.8px}.target:after{width:6px;height:6px}.content{padding-top:22px}.title{font-size:22px;margin-bottom:21px}.notice{font-size:17px;line-height:1.55;margin-bottom:49px;max-width:345px}.info{max-width:345px}.row{grid-template-columns:108px 1fr;font-size:15px;margin:15px 0}.foot{font-size:15px;bottom:52px;width:calc(100% - 36px);max-width:345px;line-height:1.58}}
   </style>
 </head>
 <body>
-  <section class="generator" id="generator">
-    <div class="panel">
-      <h1>发票信息链接生成器</h1>
-      <div class="desc">填写发票号码、合计金额和开票日期，生成一个可分享的网址和二维码。二维码默认采用黑白高容错样式，并在中心显示浅金色“税”字。</div>
-
-      <div class="field"><label for="invoiceNo">发票号码</label><input id="invoiceNo" placeholder="例如：26432000001833663121"></div>
-      <div class="field"><label for="amount">合计金额（含税）</label><input id="amount" placeholder="例如：240042.60"></div>
-      <div class="field"><label for="date">开票日期</label><input id="date" placeholder="例如：2026.08.05"></div>
-
-      <div class="buttons">
-        <button class="btn primary" id="generateBtn">生成链接 + 二维码</button>
-        <button class="btn secondary" id="clearBtn">清空</button>
-      </div>
-
-      <div class="result" id="result">
-        <div class="url" id="shareUrl"></div>
-        <div class="buttons">
-          <button class="btn primary" id="copyBtn">复制链接</button>
-          <button class="btn secondary" id="previewBtn">打开预览</button>
-        </div>
-        <div class="qr"><div id="qrcode"></div></div>
-        <button class="btn primary" id="downloadBtn" style="width:100%;margin-top:12px">下载二维码 PNG</button>
-      </div>
+<section class="admin" id="admin">
+  <div class="panel">
+    <div class="head">
+      <div><h1>发票二维码管理</h1><div class="sub">正式记录使用 A001、A002、A003… 独立短编号。二维码只保存短链接，不再把完整发票信息塞进二维码。</div></div>
+      <div class="badge" id="nextBadge">下一编号 A002</div>
     </div>
-  </section>
-
-  <section class="invoice-view" id="invoiceView">
-    <div class="mini-topbar">
-      <a class="home-btn" href="./" aria-label="返回首页">
-        <svg viewBox="0 0 64 64" aria-hidden="true">
-          <path d="M7.8 29.8 29.5 8.9a3.7 3.7 0 0 1 5 0l21.7 20.9a3.5 3.5 0 0 1-2.4 6H50v19.1a3.1 3.1 0 0 1-3.1 3.1H37V43.8H27V58h-9.9a3.1 3.1 0 0 1-3.1-3.1V35.8h-3.8a3.5 3.5 0 0 1-2.4-6Z"/>
-        </svg>
-      </a>
-      <div class="capsule" aria-label="更多操作">
-        <div class="capsule-left"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-        <div class="capsule-right"><span class="target"></span></div>
-      </div>
+    <div class="grid">
+      <div class="field"><label>发票号码</label><input id="invoiceNo" placeholder="例如：26432000001833663121"></div>
+      <div class="field"><label>合计金额（含税）</label><input id="amount" placeholder="例如：240042.60"></div>
+      <div class="field"><label>开票日期</label><input id="date" placeholder="例如：2026.08.05"></div>
     </div>
-
-    <div class="content">
-      <h1 class="title">发票信息</h1>
-      <div class="notice">以下信息仅为发票二维码所含信息，并不<br>代表查验发票真伪的结果。</div>
-      <div class="info">
-        <div class="row"><div class="label">发票号码</div><div class="value" id="vNo"></div></div>
-        <div class="row"><div class="label">合计金额</div><div class="value amount" id="vAmount"></div></div>
-        <div class="row"><div class="label">开票日期</div><div class="value" id="vDate"></div></div>
-      </div>
+    <div class="buttons">
+      <button class="btn primary" id="previewBtn">生成临时预览</button>
+      <a class="btn secondary" href="https://github.com/liu344519688-code/temp-pages/actions/workflows/create-invoice-record.yml" target="_blank" rel="noopener">正式保存记录</a>
+      <button class="btn outline" id="clearBtn">清空</button>
     </div>
-    <div class="foot">如需查验发票真伪，请通过税务机关提供的官方渠道进行查验。</div>
-  </section>
+    <div class="hint">“临时预览”只用于核对页面与二维码外观，不会写入历史记录；“正式保存记录”进入 GitHub 自动生成流程，保存后会形成独立短编号页面。</div>
+    <div class="preview" id="preview">
+      <div class="url" id="previewUrl"></div>
+      <div class="qr"><div id="qrcode"></div></div>
+    </div>
+  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-  <script>
-    const $=id=>document.getElementById(id);
-    function formatAmount(v){
-      v=(v||'').trim();
-      if(!v) return '';
-      v=v.replace(/^¥/,'').replace(/,/g,'');
-      const n=Number(v);
-      if(Number.isFinite(n)) return '¥'+n.toFixed(2)+'(含税)';
-      return '¥'+v+'(含税)';
-    }
-    function buildUrl(){
-      const no=$('invoiceNo').value.trim();
-      const amount=$('amount').value.trim();
-      const date=$('date').value.trim();
-      if(!no||!amount||!date){alert('请填写发票号码、合计金额和开票日期。');return null;}
-      const u=new URL(location.href);u.search='';u.hash='';
-      u.searchParams.set('view','invoice');
-      u.searchParams.set('no',no);
-      u.searchParams.set('amount',amount);
-      u.searchParams.set('date',date);
-      return u.toString();
-    }
-    function decorateQRCode(){
-      const wrap=$('qrcode');
-      const source=wrap.querySelector('canvas');
-      if(!source)return;
-      const out=document.createElement('canvas');
-      out.width=300;out.height=300;
-      const ctx=out.getContext('2d');
-      ctx.imageSmoothingEnabled=false;
-      ctx.fillStyle='#ffffff';ctx.fillRect(0,0,300,300);
-      ctx.drawImage(source,0,0,300,300);
+  <div class="panel">
+    <div class="history-head"><h2>历史记录</h2><div class="count" id="recordCount">加载中…</div></div>
+    <div class="table-wrap"><table class="records"><thead><tr><th>编号</th><th>发票号码</th><th>合计金额</th><th>开票日期</th><th>创建日期</th><th>操作</th></tr></thead><tbody id="recordsBody"><tr><td colspan="6" class="empty">正在读取记录…</td></tr></tbody></table></div>
+  </div>
+</section>
 
-      // 参考样式：中心保留小白区并放置浅金色“税”字。
-      // 白区控制得较小，同时配合 H 级纠错以兼顾外观和扫码稳定性。
-      const box=52;
-      const x=(300-box)/2, y=(300-box)/2;
-      ctx.fillStyle='#ffffff';
-      ctx.fillRect(x,y,box,box);
-      ctx.fillStyle='#F1D96B';
-      ctx.textAlign='center';
-      ctx.textBaseline='middle';
-      ctx.font='42px "Songti SC","STSong","SimSun",serif';
-      ctx.fillText('税',150,151);
-
-      wrap.innerHTML='';
-      wrap.appendChild(out);
-    }
-    function generate(){
-      const u=buildUrl();if(!u)return;
-      $('shareUrl').textContent=u;
-      $('qrcode').innerHTML='';
-      new QRCode($('qrcode'),{text:u,width:300,height:300,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
-      requestAnimationFrame(()=>requestAnimationFrame(decorateQRCode));
-      $('result').style.display='block';
-      $('result').scrollIntoView({behavior:'smooth',block:'start'});
-    }
-    $('generateBtn').onclick=generate;
-    $('clearBtn').onclick=()=>{$('invoiceNo').value='';$('amount').value='';$('date').value='';$('result').style.display='none';$('qrcode').innerHTML=''};
-    $('previewBtn').onclick=()=>{const u=buildUrl();if(u)window.open(u,'_blank')};
-    $('copyBtn').onclick=async()=>{const u=$('shareUrl').textContent;if(!u)return;try{await navigator.clipboard.writeText(u);alert('链接已复制。')}catch(e){prompt('请复制下面的链接：',u)}};
-    $('downloadBtn').onclick=()=>{const c=$('qrcode').querySelector('canvas');const src=c?c.toDataURL('image/png'):'';if(!src){alert('请先生成二维码。');return;}const a=document.createElement('a');a.href=src;a.download='发票信息二维码.png';document.body.appendChild(a);a.click();a.remove()};
-
-    function renderInvoice(){
-      const p=new URLSearchParams(location.search);
-      if(p.get('view')!=='invoice')return;
-      const no=p.get('no')||'', amount=p.get('amount')||'', date=p.get('date')||'';
-      $('generator').style.display='none';$('invoiceView').style.display='block';
-      $('vNo').textContent=no;
-      $('vAmount').textContent=formatAmount(amount);
-      $('vDate').textContent=date;
-      document.title='\u200B';
-    }
-    renderInvoice();
-  </script>
+<section class="invoice-view" id="invoiceView">
+  <div class="mini-topbar">
+    <a class="home-btn" href="./" aria-label="返回首页"><svg viewBox="0 0 64 64"><path d="M7.8 29.8 29.5 8.9a3.7 3.7 0 0 1 5 0l21.7 20.9a3.5 3.5 0 0 1-2.4 6H50v19.1a3.1 3.1 0 0 1-3.1 3.1H37V43.8H27V58h-9.9a3.1 3.1 0 0 1-3.1-3.1V35.8h-3.8a3.5 3.5 0 0 1-2.4-6Z"/></svg></a>
+    <div class="capsule"><div class="capsule-left"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="capsule-right"><span class="target"></span></div></div>
+  </div>
+  <div class="content"><h1 class="title">发票信息</h1><div class="notice">以下信息仅为发票二维码所含信息，并不<br>代表查验发票真伪的结果。</div><div class="info"><div class="row"><div class="label">发票号码</div><div class="value" id="vNo"></div></div><div class="row"><div class="label">合计金额</div><div class="value amount" id="vAmount"></div></div><div class="row"><div class="label">开票日期</div><div class="value" id="vDate"></div></div></div></div>
+  <div class="foot">如需查验发票真伪，请通过税务机关提供的官方渠道进行查验。</div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+let records=[];
+function formatAmount(v){v=(v||'').trim().replace(/^¥/,'').replace(/,/g,'');const n=Number(v);return Number.isFinite(n)?'¥'+n.toFixed(2)+'(含税)':'¥'+v+'(含税)'}
+function nextId(){let m=0;records.forEach(r=>{const n=parseInt(String(r.id||'').replace(/\D/g,''),10);if(Number.isFinite(n))m=Math.max(m,n)});return 'A'+String(m+1).padStart(3,'0')}
+async function loadRecords(){try{const res=await fetch('./data/records.json?ts='+Date.now(),{cache:'no-store'});records=await res.json();$('recordCount').textContent='共 '+records.length+' 条';$('nextBadge').textContent='下一编号 '+nextId();renderRecords()}catch(e){$('recordCount').textContent='读取失败';$('recordsBody').innerHTML='<tr><td colspan="6" class="empty">历史记录暂时无法读取</td></tr>'}}
+function renderRecords(){const body=$('recordsBody');body.innerHTML='';if(!records.length){body.innerHTML='<tr><td colspan="6" class="empty">暂无记录</td></tr>';return}records.slice().reverse().forEach(r=>{const tr=document.createElement('tr');const page=new URL(r.path,location.href).href;tr.innerHTML='<td class="id">'+esc(r.id)+'</td><td>'+esc(r.invoiceNo)+'</td><td>¥'+esc(r.amount)+'</td><td>'+esc(r.date)+'</td><td>'+esc(r.createdAt||'')+'</td><td><div class="link-actions"><a class="btn small primary" href="'+page+'" target="_blank" rel="noopener">打开</a><button class="btn small secondary copy-link" data-url="'+page+'">复制链接</button></div></td>';body.appendChild(tr)});document.querySelectorAll('.copy-link').forEach(b=>b.onclick=()=>copyText(b.dataset.url))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+async function copyText(t){try{await navigator.clipboard.writeText(t);alert('链接已复制。')}catch(e){prompt('请复制链接：',t)}}
+function buildTempUrl(){const no=$('invoiceNo').value.trim(),amount=$('amount').value.trim(),date=$('date').value.trim();if(!no||!amount||!date){alert('请填写发票号码、合计金额和开票日期。');return null}const u=new URL(location.href);u.search='';u.hash='';u.searchParams.set('view','invoice');u.searchParams.set('no',no);u.searchParams.set('amount',amount);u.searchParams.set('date',date);return u.toString()}
+function decorateQR(){const wrap=$('qrcode'),source=wrap.querySelector('canvas');if(!source)return;const out=document.createElement('canvas');out.width=300;out.height=300;const ctx=out.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.fillStyle='#fff';ctx.fillRect(0,0,300,300);ctx.drawImage(source,0,0,300,300);const box=52,x=(300-box)/2,y=(300-box)/2;ctx.fillStyle='#fff';ctx.fillRect(x,y,box,box);ctx.fillStyle='#F1D96B';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='42px "Songti SC","STSong","SimSun",serif';ctx.fillText('税',150,151);wrap.innerHTML='';wrap.appendChild(out)}
+$('previewBtn').onclick=()=>{const u=buildTempUrl();if(!u)return;$('previewUrl').textContent=u;$('qrcode').innerHTML='';new QRCode($('qrcode'),{text:u,width:300,height:300,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});requestAnimationFrame(()=>requestAnimationFrame(decorateQR));$('preview').style.display='block'};
+$('clearBtn').onclick=()=>{$('invoiceNo').value='';$('amount').value='';$('date').value='';$('preview').style.display='none';$('qrcode').innerHTML=''};
+function renderInvoice(){const p=new URLSearchParams(location.search);if(p.get('view')!=='invoice')return false;$('admin').style.display='none';$('invoiceView').style.display='block';$('vNo').textContent=p.get('no')||'';$('vAmount').textContent=formatAmount(p.get('amount')||'');$('vDate').textContent=p.get('date')||'';document.title='\u200B';return true}
+if(!renderInvoice())loadRecords();
+</script>
 </body>
 </html>
