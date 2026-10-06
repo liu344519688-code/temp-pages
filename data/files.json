@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "id": "F001",
+    "title": "照片",
+    "kind": "image",
+    "mime": "image/jpeg",
+    "originalName": "微信图片_20260929105538_150_4.jpg",
+    "path": "f/f001/",
+    "asset": "f/f001/file.jpg",
+    "createdAt": "2026-10-06"
+  }
+]
