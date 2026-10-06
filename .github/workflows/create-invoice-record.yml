@@ -55,10 +55,7 @@ jobs:
           root = Path('.')
           records_path = root / 'data' / 'records.json'
           records_path.parent.mkdir(parents=True, exist_ok=True)
-          if records_path.exists():
-              records = json.loads(records_path.read_text(encoding='utf-8'))
-          else:
-              records = []
+          records = json.loads(records_path.read_text(encoding='utf-8')) if records_path.exists() else []
 
           nums = []
           for r in records:
@@ -79,8 +76,8 @@ jobs:
 
           page_dir = root / 'q' / slug
           page_dir.mkdir(parents=True, exist_ok=True)
-
           page_url = f'https://liu344519688-code.github.io/temp-pages/q/{slug}/'
+
           page_html = f'''<!DOCTYPE html>
           <html lang="zh-CN">
           <head>
@@ -122,22 +119,34 @@ jobs:
           </html>'''
           (page_dir / 'index.html').write_text(page_html, encoding='utf-8')
 
-          qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_Q, box_size=9, border=0)
+          # Official QR: short record URL + M correction. For current GitHub URL length,
+          # this fits QR Version 4 (33x33 modules), matching the reference density much more closely.
+          qr = qrcode.QRCode(
+              version=4,
+              error_correction=qrcode.constants.ERROR_CORRECT_M,
+              box_size=9,
+              border=0,
+          )
           qr.add_data(page_url)
-          qr.make(fit=True)
+          qr.make(fit=False)
+          matrix = qr.get_matrix()
+          assert len(matrix) == 33, f'Expected 33 modules, got {len(matrix)}'
+
           img = qr.make_image(fill_color='black', back_color='white').convert('RGB')
-          img = img.resize((300,300), Image.Resampling.NEAREST)
-          draw = ImageDraw.Draw(img)
+          # 33 * 9 = 297; place on 300x300 canvas with a tiny white margin like the reference image.
+          canvas = Image.new('RGB', (300,300), 'white')
+          canvas.paste(img, (1,1))
+          draw = ImageDraw.Draw(canvas)
           cx = cy = 150
-          patch = 42
+          patch = 45
           draw.rectangle([cx-patch//2, cy-patch//2, cx+patch//2, cy+patch//2], fill='white')
           font_path = '/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc'
-          font = ImageFont.truetype(font_path, 38)
+          font = ImageFont.truetype(font_path, 39)
           text='税'
           bbox=draw.textbbox((0,0),text,font=font)
           tw,th=bbox[2]-bbox[0],bbox[3]-bbox[1]
-          draw.text((cx-tw/2,cy-th/2-2),text,font=font,fill=(242,210,92))
-          img.save(page_dir / 'qrcode.png')
+          draw.text((cx-tw/2,cy-th/2-2),text,font=font,fill=(244,216,107))
+          canvas.save(page_dir / 'qrcode.png')
 
           records.append({
               'id': record_id,
@@ -145,6 +154,7 @@ jobs:
               'amount': amount_raw,
               'date': invoice_date,
               'path': f'q/{slug}/',
+              'qr': f'q/{slug}/qrcode.png',
               'createdAt': datetime.now(timezone.utc).date().isoformat()
           })
           records_path.write_text(json.dumps(records, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
