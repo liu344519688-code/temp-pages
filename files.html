@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>资料二维码管理</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f6f8;color:#111;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif}.wrap{max-width:1040px;margin:auto;padding:24px 16px 50px}.card{background:#fff;border:1px solid #e8e8e8;border-radius:18px;padding:22px;box-shadow:0 8px 28px rgba(0,0,0,.05);margin-bottom:18px}.head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.head h1{margin:0;font-size:28px}.sub{margin-top:8px;color:#6f6f6f;line-height:1.65}.toplinks{display:flex;gap:8px;flex-wrap:wrap}.pill{border:0;background:#111;color:#fff;border-radius:999px;padding:9px 14px;font-weight:700;white-space:nowrap;text-decoration:none}.pill.light{background:#eef0f2;color:#111}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}.field label{display:block;font-weight:700;margin-bottom:7px}.field input{width:100%;height:46px;border:1px solid #d4d4d4;border-radius:10px;padding:0 12px;font-size:16px}.field input[type=file]{padding:10px 12px;height:auto}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.btn{height:44px;border:0;border-radius:10px;padding:0 18px;font-size:15px;font-weight:700;cursor:pointer}.primary{background:#111;color:#fff}.secondary{background:#eef0f2}.btn:disabled{opacity:.45;cursor:not-allowed}.hint{color:#888;font-size:13px;line-height:1.6;margin-top:10px}.status{margin-top:14px;padding:12px 14px;border-radius:10px;background:#f7f7f7;color:#555;display:none;line-height:1.55}.status.ok{background:#eef8f0;color:#216b31}.status.err{background:#fff0f0;color:#a62626}.historyTop{display:flex;justify-content:space-between;align-items:center}.historyTop h2{margin:0}.tableWrap{overflow:auto;margin-top:14px}table{border-collapse:collapse;width:100%;min-width:900px}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid #eee;font-size:14px;vertical-align:middle}th{color:#777;background:#fafafa}.small{height:34px;padding:0 11px;border-radius:8px;border:0;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}.open{background:#111;color:#fff}.copy{background:#eef0f2;color:#111}.ops{display:flex;gap:7px;flex-wrap:wrap}.empty{text-align:center;color:#999;padding:28px}.type{display:inline-block;padding:4px 8px;border-radius:999px;background:#f0f1f3;font-size:12px;font-weight:700}.modal{position:fixed;inset:0;background:rgba(0,0,0,.58);display:none;align-items:center;justify-content:center;padding:18px;z-index:9999}.modal.show{display:flex}.box{background:#fff;border-radius:16px;padding:18px;max-width:360px;width:100%;text-align:center;box-shadow:0 18px 70px rgba(0,0,0,.28)}.box canvas{width:300px;height:300px;max-width:100%}.title{font-size:18px;font-weight:800;margin-bottom:12px}.modalActions{display:flex;gap:10px;margin-top:14px}.modalActions button{flex:1;height:42px;border-radius:9px;border:0;font-weight:700;cursor:pointer}.modalActions .dark{background:#111;color:#fff}.modalActions .light{background:#eef0f2;color:#111}@media(max-width:720px){.wrap{padding:12px}.card{padding:17px}.head{display:block}.toplinks{margin-top:12px}.grid{grid-template-columns:1fr}.actions{display:grid;grid-template-columns:1fr}.btn{width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="card">
+    <div class="head">
+      <div><h1>图片 / PDF 资料二维码管理</h1><div class="sub">上传图片或 PDF 后，自动生成 F001、F002… 固定查看页和二维码。扫码即可直接查看资料。</div></div>
+      <div class="toplinks"><a class="pill light" href="./">发票二维码</a><span class="pill" id="nextBadge">下一编号 F001</span></div>
+    </div>
+    <div class="grid">
+      <div class="field"><label>资料名称</label><input id="title" placeholder="例如：郴州大棚维修施工方案"></div>
+      <div class="field"><label>选择图片 / PDF</label><input id="file" type="file" accept="image/jpeg,image/png,image/webp,application/pdf"></div>
+      <div class="field"><label>上传密码</label><input id="pin" type="password" placeholder="Cloudflare 中设置的 ADMIN_PIN"></div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="uploadBtn">正式上传并生成二维码</button>
+      <button class="btn secondary" id="clearBtn">清空</button>
+    </div>
+    <div class="hint" id="backendHint">正在检查上传后台…</div>
+    <div class="hint">支持 JPG、PNG、WEBP、PDF；单文件建议不超过 8 MB。上传密码只在当前浏览器会话中使用，不会保存到仓库。</div>
+    <div class="status" id="status"></div>
+  </section>
+
+  <section class="card">
+    <div class="historyTop"><h2>资料历史记录</h2><div id="recordCount">加载中…</div></div>
+    <div class="tableWrap"><table><thead><tr><th>编号</th><th>资料名称</th><th>类型</th><th>文件名</th><th>上传日期</th><th>操作</th></tr></thead><tbody id="recordsBody"><tr><td colspan="6" class="empty">正在读取…</td></tr></tbody></table></div>
+  </section>
+</div>
+
+<div class="modal" id="qrModal" aria-hidden="true"><div class="box"><div class="title" id="qrTitle">资料二维码</div><div id="qrWrap"></div><div class="modalActions"><button class="dark" id="qrDownload">下载二维码</button><button class="light" id="qrClose">关闭</button></div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+let records=[];let workerApi='';const PAGE_BASE='https://liu344519688-code.github.io/temp-pages/';
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function showStatus(t,type=''){const e=$('status');e.textContent=t;e.className='status '+type;e.style.display='block'}
+function nextId(){let m=0;for(const r of records){const n=parseInt(String(r.id||'').replace(/\D/g,''),10);if(Number.isFinite(n))m=Math.max(m,n)}return 'F'+String(m+1).padStart(3,'0')}
+async function loadConfig(){try{const r=await fetch('./data/app-config.json?ts='+Date.now(),{cache:'no-store'});const c=await r.json();workerApi=String(c.workerApiBase||'').replace(/\/$/,'');$('backendHint').textContent=workerApi?'资料上传后台：已连接':'资料上传后台尚未连接';$('uploadBtn').disabled=!workerApi}catch(e){$('backendHint').textContent='后台配置读取失败';$('uploadBtn').disabled=true}}
+async function loadRecords(){try{const r=await fetch('./data/files.json?ts='+Date.now(),{cache:'no-store'});records=await r.json();$('recordCount').textContent='共 '+records.length+' 条';$('nextBadge').textContent='下一编号 '+nextId();render()}catch(e){$('recordCount').textContent='读取失败';$('recordsBody').innerHTML='<tr><td colspan="6" class="empty">资料记录读取失败</td></tr>'}}
+function render(){const b=$('recordsBody');b.innerHTML='';if(!records.length){b.innerHTML='<tr><td colspan="6" class="empty">暂无资料</td></tr>';return}for(const r of records.slice().reverse()){const page=new URL(r.path,PAGE_BASE).href;const asset=new URL(r.asset,PAGE_BASE).href;const tr=document.createElement('tr');tr.innerHTML='<td><b>'+esc(r.id)+'</b></td><td>'+esc(r.title)+'</td><td><span class="type">'+esc(r.kind.toUpperCase())+'</span></td><td>'+esc(r.originalName)+'</td><td>'+esc(r.createdAt||'')+'</td><td><div class="ops"><a class="small open" href="'+page+'" target="_blank">查看资料</a><button class="small copy copyLink" data-url="'+page+'">复制链接</button><button class="small copy qrBtn" data-id="'+esc(r.id)+'" data-url="'+page+'">二维码</button><a class="small copy" href="'+asset+'" target="_blank">原文件</a></div></td>';b.appendChild(tr)}document.querySelectorAll('.copyLink').forEach(x=>x.onclick=()=>copyText(x.dataset.url));document.querySelectorAll('.qrBtn').forEach(x=>x.onclick=()=>openQr(x.dataset.id,x.dataset.url))}
+async function copyText(t){try{await navigator.clipboard.writeText(t);showStatus('链接已复制。','ok')}catch(e){prompt('请复制链接：',t)}}
+function readBase64(file){return new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>resolve(String(fr.result).split(',')[1]||'');fr.onerror=reject;fr.readAsDataURL(file)})}
+async function upload(){const title=$('title').value.trim();const file=$('file').files[0];const pin=$('pin').value.trim();if(!title){showStatus('请填写资料名称。','err');return}if(!file){showStatus('请选择图片或 PDF。','err');return}if(!pin){showStatus('请输入上传密码。','err');return}if(file.size>8*1024*1024){showStatus('文件超过 8 MB，请压缩后再上传。','err');return}const allowed=['image/jpeg','image/png','image/webp','application/pdf'];if(!allowed.includes(file.type)){showStatus('只支持 JPG、PNG、WEBP、PDF。','err');return}$('uploadBtn').disabled=true;showStatus('正在上传并创建 '+nextId()+'，请稍候…');try{const base64=await readBase64(file);const r=await fetch(workerApi+'/upload',{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Pin':pin},body:JSON.stringify({title,originalName:file.name,mime:file.type,fileBase64:base64})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||'上传失败');sessionStorage.setItem('fileAdminPin',pin);showStatus(j.id+' 上传成功，固定查看页已生成。','ok');$('title').value='';$('file').value='';await new Promise(r=>setTimeout(r,2500));await loadRecords();openQr(j.id,j.pageUrl)}catch(e){showStatus('上传失败：'+e.message,'err')}finally{$('uploadBtn').disabled=false}}
+function openQr(id,url){$('qrTitle').textContent=id+' 资料二维码';const w=$('qrWrap');w.innerHTML='';new QRCode(w,{text:url,width:300,height:300,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M});$('qrModal').classList.add('show');$('qrModal').setAttribute('aria-hidden','false');$('qrDownload').onclick=()=>{const c=w.querySelector('canvas');const img=w.querySelector('img');const href=c?c.toDataURL('image/png'):img?.src;if(!href)return;const a=document.createElement('a');a.href=href;a.download=id+'-资料二维码.png';a.click()}}
+function closeQr(){$('qrModal').classList.remove('show');$('qrModal').setAttribute('aria-hidden','true')}
+$('uploadBtn').onclick=upload;$('clearBtn').onclick=()=>{$('title').value='';$('file').value='';$('status').style.display='none'};$('qrClose').onclick=closeQr;$('qrModal').onclick=e=>{if(e.target===$('qrModal'))closeQr()};$('pin').value=sessionStorage.getItem('fileAdminPin')||'';loadConfig();loadRecords();
+</script>
+</body>
+</html>
