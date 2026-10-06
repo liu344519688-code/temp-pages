@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>链接二维码生成器</title>
+  <meta name="description" content="输入任意链接，一键生成二维码并下载。" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      background: linear-gradient(135deg, #f4f8ff 0%, #eefaf4 100%);
+      color: #1f2937;
+    }
+    .card {
+      width: 100%;
+      max-width: 560px;
+      background: rgba(255,255,255,.96);
+      border-radius: 22px;
+      padding: 32px;
+      box-shadow: 0 18px 50px rgba(15, 23, 42, .12);
+      border: 1px solid rgba(148,163,184,.18);
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      text-align: center;
+    }
+    .sub {
+      margin: 0 0 26px;
+      text-align: center;
+      color: #64748b;
+      line-height: 1.7;
+    }
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 9px;
+    }
+    input {
+      width: 100%;
+      height: 48px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 0 14px;
+      font-size: 16px;
+      outline: none;
+      transition: .2s;
+    }
+    input:focus {
+      border-color: #16a34a;
+      box-shadow: 0 0 0 4px rgba(22,163,74,.1);
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    button {
+      height: 46px;
+      border: 0;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .15s ease, opacity .15s ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+    .primary { background: #16a34a; color: white; }
+    .secondary { background: #e2e8f0; color: #334155; }
+    .result {
+      margin-top: 26px;
+      display: none;
+      text-align: center;
+    }
+    #qrcode {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+    }
+    #qrcode img, #qrcode canvas { display:block; max-width:100%; height:auto; }
+    .tips {
+      margin-top: 12px;
+      color: #64748b;
+      font-size: 14px;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+    .download {
+      margin-top: 14px;
+      width: 100%;
+      background: #0f172a;
+      color: white;
+    }
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+    @media (max-width: 520px) {
+      .card { padding: 24px 18px; }
+      .buttons { grid-template-columns: 1fr; }
+      h1 { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>链接二维码生成器</h1>
+    <p class="sub">粘贴任意网页链接，一键生成二维码。二维码在浏览器本地生成，不上传链接内容。</p>
+
+    <label for="urlInput">请输入链接</label>
+    <input id="urlInput" type="text" inputmode="url" placeholder="例如：https://example.com" autocomplete="off" />
+
+    <div class="buttons">
+      <button class="primary" id="generateBtn">生成二维码</button>
+      <button class="secondary" id="clearBtn">清空</button>
+    </div>
+
+    <section class="result" id="result">
+      <div id="qrcode"></div>
+      <div class="tips" id="urlText"></div>
+      <button class="download" id="downloadBtn">下载二维码 PNG</button>
+    </section>
+
+    <div class="footer">Powered by GitHub Pages</div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script>
+    const input = document.getElementById('urlInput');
+    const generateBtn = document.getElementById('generateBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const result = document.getElementById('result');
+    const qrWrap = document.getElementById('qrcode');
+    const urlText = document.getElementById('urlText');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    function normalizeUrl(value) {
+      let v = value.trim();
+      if (!v) return '';
+      if (!/^https?:\/\//i.test(v)) v = 'https://' + v;
+      return v;
+    }
+
+    function generateQR() {
+      const url = normalizeUrl(input.value);
+      if (!url) {
+        alert('请先输入一个链接。');
+        input.focus();
+        return;
+      }
+
+      try {
+        new URL(url);
+      } catch (e) {
+        alert('链接格式不正确，请重新输入。');
+        return;
+      }
+
+      qrWrap.innerHTML = '';
+      new QRCode(qrWrap, {
+        text: url,
+        width: 280,
+        height: 280,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      urlText.textContent = url;
+      result.style.display = 'block';
+    }
+
+    function downloadQR() {
+      const canvas = qrWrap.querySelector('canvas');
+      const img = qrWrap.querySelector('img');
+      let dataUrl = '';
+
+      if (canvas) dataUrl = canvas.toDataURL('image/png');
+      else if (img) dataUrl = img.src;
+
+      if (!dataUrl) {
+        alert('请先生成二维码。');
+        return;
+      }
+
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = 'qrcode.png';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    generateBtn.addEventListener('click', generateQR);
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      qrWrap.innerHTML = '';
+      urlText.textContent = '';
+      result.style.display = 'none';
+      input.focus();
+    });
+    downloadBtn.addEventListener('click', downloadQR);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') generateQR();
+    });
+
+    const params = new URLSearchParams(location.search);
+    const preset = params.get('url');
+    if (preset) {
+      input.value = preset;
+      generateQR();
+    }
+  </script>
+</body>
+</html>
