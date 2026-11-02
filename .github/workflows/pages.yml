@@ -29,6 +29,11 @@ jobs:
         with:
           enablement: true
 
+      - name: Build fixed sample detail pages
+        run: |
+          node --test tests/sample.test.mjs
+          node scripts/build-pages.mjs
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
