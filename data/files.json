@@ -46,5 +46,33 @@
     "kind": "image",
     "mime": "image/jpeg",
     "originalName": "已恢复_产商品检测报告 -1-1.jpg"
+  },
+  {
+    "id": "F004",
+    "title": "200",
+    "path": "f/f004/",
+    "sample": {},
+    "attachments": [
+      {
+        "asset": "f/f004/file1.jpg",
+        "kind": "image",
+        "mime": "image/jpeg",
+        "originalName": "已恢复_产商品检测报告 -1-1.jpg",
+        "size": 2543696
+      }
+    ],
+    "createdAt": "2026-11-02",
+    "updatedAt": "2026-11-02T03:32:43.532Z",
+    "revision": "c720d7a1-7f17-4ba7-9f45-b31504ad4fd1",
+    "history": [
+      {
+        "at": "2026-11-02T03:32:43.532Z",
+        "action": "建立档案，上传 1 份附件"
+      }
+    ],
+    "asset": "f/f004/file1.jpg",
+    "kind": "image",
+    "mime": "image/jpeg",
+    "originalName": "已恢复_产商品检测报告 -1-1.jpg"
   }
 ]
