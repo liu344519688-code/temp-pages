@@ -31,7 +31,7 @@ jobs:
 
       - name: Build fixed sample detail pages
         run: |
-          node --test tests/sample.test.mjs
+          node --test tests/*.test.mjs
           node scripts/build-pages.mjs
 
       - name: Upload artifact
