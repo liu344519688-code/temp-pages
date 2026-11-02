@@ -11,5 +11,6 @@ export function renderDetail(record,target=root,{preview=false}={}){
 // Also support already-created viewer shells from the existing upload service.
 if(root&&!document.body.dataset.preview){
   const id=document.body.dataset.recordId;
-  fetch(new URL('data/files.json',base),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('文件暂时无法打开');return r.json()}).then(records=>{const record=records.find(r=>r.id.toUpperCase()===id);if(!record)throw new Error('文件不存在');location.replace(assetUrl(primaryAssetOf(record)));}).catch(error=>{root.textContent=error.message;});
+  document.title='\u200b';document.body.style.margin='0';
+  fetch(new URL('data/files.json',base),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('文件暂时无法打开');return r.json()}).then(records=>{const record=records.find(r=>r.id.toUpperCase()===id);if(!record)throw new Error('文件不存在');const asset=primaryAssetOf(record),url=assetUrl(asset);if(/\.pdf$/i.test(asset)){location.replace(url);return;}root.innerHTML=`<img src="${e(url)}" alt="" style="display:block;width:100%;height:auto">`;}).catch(error=>{root.textContent=error.message;});
 }

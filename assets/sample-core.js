@@ -16,11 +16,12 @@ export function attachmentsOf(record){return record.attachments?.length?record.a
 export function primaryAssetOf(record){return record.asset||attachmentsOf(record)[0]?.asset;}
 export function viewerHtml(id,title='样品资料',asset){
   if(!/^F\d+$/i.test(id))throw new Error('资料编号格式不正确');
-  const head=`<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)}</title>`;
+  const head='<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>&#8203;</title>';
   if(asset){
     const prefix=`f/${id.toLowerCase()}/`;
     if(!asset.startsWith(prefix)||!/^[-\w]+\.(?:jpe?g|png|webp|pdf)$/i.test(asset.slice(prefix.length)))throw new Error('原文件地址不正确');
     const target='./'+asset.slice(prefix.length);
+    if(!/\.pdf$/i.test(asset))return `${head}<style>html,body{margin:0;padding:0;background:#fff}img{display:block;width:100%;height:auto}</style></head><body><img src="${target}" alt=""></body></html>`;
     return `${head}<meta http-equiv="refresh" content="0;url=${target}"><script>location.replace(${JSON.stringify(target)})</script></head><body></body></html>`;
   }
   return `${head}</head><body data-record-id="${id.toUpperCase()}"><main id="detail"></main><script type="module" src="../../assets/detail.js"></script></body></html>`;
