@@ -115,5 +115,35 @@
     "kind": "pdf",
     "mime": "application/pdf",
     "originalName": "（200孔漂浮盘）产商品检测报告 -1.pdf"
+  },
+  {
+    "id": "F006",
+    "title": "200孔（1）",
+    "path": "f/f006/",
+    "sample": {
+      "sampleNo": "006"
+    },
+    "attachments": [
+      {
+        "asset": "f/f006/file1.pdf",
+        "kind": "pdf",
+        "mime": "application/pdf",
+        "originalName": "（200孔漂浮盘）产商品检测报告 （上传版）.pdf",
+        "size": 642097
+      }
+    ],
+    "createdAt": "2026-11-02",
+    "updatedAt": "2026-11-02T06:58:57.307Z",
+    "revision": "b56418b2-f546-4f20-9d99-0d01e6d8b4a4",
+    "history": [
+      {
+        "at": "2026-11-02T06:58:57.307Z",
+        "action": "建立档案，上传 1 份附件"
+      }
+    ],
+    "asset": "f/f006/file1.pdf",
+    "kind": "pdf",
+    "mime": "application/pdf",
+    "originalName": "（200孔漂浮盘）产商品检测报告 （上传版）.pdf"
   }
 ]
