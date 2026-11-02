@@ -29,7 +29,12 @@ jobs:
         with:
           enablement: true
 
+      - name: Install PDF page renderer
+        run: python3 -m pip install --only-binary=:all: --target "$RUNNER_TEMP/qr-pdf-libs" -r scripts/requirements-pdf.txt
+
       - name: Build fixed sample detail pages
+        env:
+          PYTHONPATH: ${{ runner.temp }}/qr-pdf-libs
         run: |
           node --test tests/*.test.mjs
           node scripts/build-pages.mjs

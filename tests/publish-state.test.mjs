@@ -8,6 +8,7 @@ function fetchMock({records=[record],pageStatus=200,assetStatus=200}={}){
   return {calls,fetcher:async(url,options={})=>{const u=new URL(url);calls.push({url:u,options});return u.pathname.endsWith('files.json')?Response.json(records):new Response(null,{status:u.pathname.endsWith('.jpg')?assetStatus:pageStatus});}};
 }
 test('scan URL keeps the fixed path and bypasses a previous cached 404',()=>{const url=new URL(scanUrl(record,base));assert.equal(url.pathname,'/temp-pages/f/f004/');assert.equal(url.searchParams.get('v'),record.revision);});
+test('PDF QR links request the compatible page image viewer',()=>{const url=new URL(scanUrl({...record,asset:'f/f004/file1.pdf'},base));assert.equal(url.searchParams.get('view'),'pages');assert.equal(url.pathname,'/temp-pages/f/f004/');});
 test('a saved but unpublished record is not ready',async()=>{const m=fetchMock({records:[]});assert.equal(await isPublished(record,base,m),false);assert.equal(m.calls.length,1);});
 test('a previous version of the same record is not ready',async()=>{const m=fetchMock({records:[{...record,revision:'older'}]});assert.equal(await isPublished(record,base,m),false);assert.equal(m.calls.length,1);});
 test('both the page and original file must be available',async()=>{for(const status of [{pageStatus:404},{assetStatus:404}]){const m=fetchMock(status);assert.equal(await isPublished(record,base,m),false);}});
