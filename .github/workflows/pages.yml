@@ -30,7 +30,8 @@ jobs:
           enablement: true
 
       - name: Install PDF page renderer
-        run: python3 -m pip install --only-binary=:all: --target "$RUNNER_TEMP/qr-pdf-libs" -r scripts/requirements-pdf.txt
+        run: |
+          python3 -m pip install --only-binary=:all: --target "$RUNNER_TEMP/qr-pdf-libs" -r scripts/requirements-pdf.txt
 
       - name: Build fixed sample detail pages
         env:
@@ -47,3 +48,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
