@@ -18,5 +18,33 @@
     "path": "f/f002/",
     "asset": "f/f002/file.jpg",
     "createdAt": "2026-10-06"
+  },
+  {
+    "id": "F003",
+    "title": "200孔",
+    "path": "f/f003/",
+    "sample": {},
+    "attachments": [
+      {
+        "asset": "f/f003/file1.jpg",
+        "kind": "image",
+        "mime": "image/jpeg",
+        "originalName": "已恢复_产商品检测报告 -1-1.jpg",
+        "size": 2543696
+      }
+    ],
+    "createdAt": "2026-11-02",
+    "updatedAt": "2026-11-02T03:05:56.235Z",
+    "revision": "91a8d3ce-25b6-4c90-a83b-27fad8d23dcd",
+    "history": [
+      {
+        "at": "2026-11-02T03:05:56.235Z",
+        "action": "建立档案，上传 1 份附件"
+      }
+    ],
+    "asset": "f/f003/file1.jpg",
+    "kind": "image",
+    "mime": "image/jpeg",
+    "originalName": "已恢复_产商品检测报告 -1-1.jpg"
   }
 ]
