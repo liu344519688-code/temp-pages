@@ -13,7 +13,15 @@ export function normalizeSample(raw={}){
 }
 export function nextFileId(records){return 'F'+String(Math.max(0,...records.map(r=>/^F\d+$/i.test(r.id)?Number(r.id.slice(1)):0))+1).padStart(3,'0');}
 export function attachmentsOf(record){return record.attachments?.length?record.attachments:[{asset:record.asset,kind:record.kind,mime:record.mime,originalName:record.originalName}];}
-export function viewerHtml(id,title='样品资料'){
+export function primaryAssetOf(record){return record.asset||attachmentsOf(record)[0]?.asset;}
+export function viewerHtml(id,title='样品资料',asset){
   if(!/^F\d+$/i.test(id))throw new Error('资料编号格式不正确');
-  return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>${escapeHtml(title)} · ${id.toUpperCase()}</title><link rel="stylesheet" href="../../assets/style.css"></head><body data-record-id="${id.toUpperCase()}"><main id="detail" class="detail-wrap"><p role="status">正在读取资料…</p></main><noscript>请启用 JavaScript 查看档案。原始文件仍保存在本目录中。</noscript><script type="module" src="../../assets/detail.js"></script></body></html>`;
+  const head=`<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)}</title>`;
+  if(asset){
+    const prefix=`f/${id.toLowerCase()}/`;
+    if(!asset.startsWith(prefix)||!/^[-\w]+\.(?:jpe?g|png|webp|pdf)$/i.test(asset.slice(prefix.length)))throw new Error('原文件地址不正确');
+    const target='./'+asset.slice(prefix.length);
+    return `${head}<meta http-equiv="refresh" content="0;url=${target}"><script>location.replace(${JSON.stringify(target)})</script></head><body></body></html>`;
+  }
+  return `${head}</head><body data-record-id="${id.toUpperCase()}"><main id="detail"></main><script type="module" src="../../assets/detail.js"></script></body></html>`;
 }

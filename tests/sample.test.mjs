@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {normalizeSample,nextFileId,viewerHtml,attachmentsOf} from '../assets/sample-core.js';
+import {normalizeSample,nextFileId,viewerHtml,attachmentsOf,primaryAssetOf} from '../assets/sample-core.js';
 import {validateFiles,saveSample} from '../cloudflare-worker/src/sample-upload.js';
 import worker from '../cloudflare-worker/src/index.js';
 const pdf={originalName:'报告.pdf',mime:'application/pdf',fileBase64:btoa('%PDF-1.7\n%%EOF')};
@@ -28,6 +28,8 @@ function repoMock({conflict=false,seed=legacy}={}){
 }
 test('F numbering preserves legacy IDs and continues after gaps',()=>{assert.equal(nextFileId(legacy),'F003');assert.equal(nextFileId([{id:'F999'},{id:'A1002'}]),'F1000');});
 test('metadata is bounded; HTML is escaped in generated fixed page',()=>{assert.deepEqual(normalizeSample({sampleNo:' S001 ',unknown:'x'}),{sampleNo:'S001'});assert.throws(()=>normalizeSample({model:{}}));assert.throws(()=>normalizeSample({description:'x'.repeat(3001)}));assert.match(viewerHtml('F003','<script>alert(1)</script>'),/&lt;script&gt;/);assert.throws(()=>viewerHtml('../bad'));});
+test('scan URLs immediately open only the original image or PDF',()=>{for(const name of ['file.jpg','file1.pdf']){const html=viewerHtml('F003','样品','f/f003/'+name);assert.ok(html.includes(`content="0;url=./${name}"`));assert.ok(html.includes(`location.replace("./${name}")`));assert.ok(html.endsWith('<body></body></html>'));assert.doesNotMatch(html,/<iframe|stylesheet|<button|<main/);}});
+test('direct file target preserves legacy primary files and rejects invalid paths',()=>{assert.equal(primaryAssetOf(legacy[0]),legacy[0].asset);assert.equal(primaryAssetOf({attachments:[{asset:'f/f003/file1.pdf'},{asset:'f/f003/file2.jpg'}]}),'f/f003/file1.pdf');for(const asset of ['f/f002/file.jpg','https://example.com/file.pdf','f/f003/../../file.pdf','f/f003/file.html'])assert.throws(()=>viewerHtml('F003','样品',asset));});
 test('legacy attachments require no migration',()=>assert.equal(attachmentsOf(legacy[0])[0].asset,'f/f001/file.jpg'));
 test('accept image/PDF and reject spoofed, excessive, malformed uploads',()=>{assert.equal(validateFiles([pdf,png]).length,2);assert.throws(()=>validateFiles([{...pdf,fileBase64:btoa('not-pdf')}]));assert.throws(()=>validateFiles(Array(9).fill(pdf)));assert.throws(()=>validateFiles([{...pdf,fileBase64:'X==='}]));assert.throws(()=>validateFiles([{...pdf,mime:'text/html'}]));});
 test('normal large PDFs do not overflow the validator, size limits hold',()=>{const bytes=Buffer.alloc(7*1024*1024);bytes.write('%PDF-1.7');const large={...pdf,fileBase64:bytes.toString('base64')};assert.equal(validateFiles([large])[0].size,bytes.length);assert.throws(()=>validateFiles([large,large,large]),error=>error.status===413);});
