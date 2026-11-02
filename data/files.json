@@ -173,5 +173,33 @@
     "kind": "pdf",
     "mime": "application/pdf",
     "originalName": "（200孔漂浮盘）产商品检测报告 （上传版）.pdf"
+  },
+  {
+    "id": "F008",
+    "title": "128",
+    "path": "f/f008/",
+    "sample": {},
+    "attachments": [
+      {
+        "asset": "f/f008/file1.pdf",
+        "kind": "pdf",
+        "mime": "application/pdf",
+        "originalName": "（128孔育苗盘）产商品检测报告 -1.pdf",
+        "size": 643942
+      }
+    ],
+    "createdAt": "2026-11-02",
+    "updatedAt": "2026-11-02T07:42:49.737Z",
+    "revision": "a61037ee-ca8b-4330-a8b2-ec9c4387f9d5",
+    "history": [
+      {
+        "at": "2026-11-02T07:42:49.737Z",
+        "action": "建立档案，上传 1 份附件"
+      }
+    ],
+    "asset": "f/f008/file1.pdf",
+    "kind": "pdf",
+    "mime": "application/pdf",
+    "originalName": "（128孔育苗盘）产商品检测报告 -1.pdf"
   }
 ]
