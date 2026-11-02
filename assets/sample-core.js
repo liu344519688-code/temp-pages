@@ -14,11 +14,6 @@ export function normalizeSample(raw={}){
 export function nextFileId(records){return 'F'+String(Math.max(0,...records.map(r=>/^F\d+$/i.test(r.id)?Number(r.id.slice(1)):0))+1).padStart(3,'0');}
 export function attachmentsOf(record){return record.attachments?.length?record.attachments:[{asset:record.asset,kind:record.kind,mime:record.mime,originalName:record.originalName}];}
 export function primaryAssetOf(record){return record.asset||attachmentsOf(record)[0]?.asset;}
-export function pdfViewerHtml(id,pages){
-  if(!/^F\d+$/i.test(id)||!Array.isArray(pages)||!pages.length)throw new Error('PDF 预览信息不正确');
-  for(const page of pages)if(!/^\.\/_preview\/[a-f0-9]{20}\/page-\d{3,}\.jpg$/.test(page.src)||!Number.isSafeInteger(page.width)||!Number.isSafeInteger(page.height)||page.width<1||page.height<1)throw new Error('PDF 预览页不正确');
-  return '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>&#8203;</title><style>html,body{margin:0;padding:0;background:#fff}img{display:block;width:100%;height:auto}</style></head><body>'+pages.map((page,index)=>`<img src="${page.src}" width="${page.width}" height="${page.height}" alt="" loading="${index?'lazy':'eager'}" decoding="async">`).join('')+'</body></html>';
-}
 export function viewerHtml(id,title='样品资料',asset,version=''){
   if(!/^F\d+$/i.test(id))throw new Error('资料编号格式不正确');
   const head='<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>&#8203;</title>';

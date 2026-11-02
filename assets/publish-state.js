@@ -3,7 +3,7 @@ export function scanUrl(record,base){
   const url=new URL(record.path,base);
   const revision=record.revision||record.updatedAt||record.createdAt;
   if(revision)url.searchParams.set('v',revision);
-  if(/\.pdf$/i.test(primaryAssetOf(record)||''))url.searchParams.set('view','pages');
+  if(/\.pdf$/i.test(primaryAssetOf(record)||''))url.searchParams.set('view','pdf');
   return url.href;
 }
 export async function isPublished(record,base,{fetcher=fetch}={}){
