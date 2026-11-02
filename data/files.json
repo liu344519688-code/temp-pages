@@ -85,5 +85,35 @@
     "kind": "image",
     "mime": "image/jpeg",
     "originalName": "已恢复_产商品检测报告 -1-1.jpg"
+  },
+  {
+    "id": "F005",
+    "title": "200孔圆孔",
+    "path": "f/f005/",
+    "sample": {
+      "sampleNo": "005"
+    },
+    "attachments": [
+      {
+        "asset": "f/f005/file1.pdf",
+        "kind": "pdf",
+        "mime": "application/pdf",
+        "originalName": "（200孔漂浮盘）产商品检测报告 -1.pdf",
+        "size": 7704867
+      }
+    ],
+    "createdAt": "2026-11-02",
+    "updatedAt": "2026-11-02T06:42:17.837Z",
+    "revision": "e9d79963-1e76-451f-bafd-e37ba7431e43",
+    "history": [
+      {
+        "at": "2026-11-02T06:42:17.837Z",
+        "action": "建立档案，上传 1 份附件"
+      }
+    ],
+    "asset": "f/f005/file1.pdf",
+    "kind": "pdf",
+    "mime": "application/pdf",
+    "originalName": "（200孔漂浮盘）产商品检测报告 -1.pdf"
   }
 ]
